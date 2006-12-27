@@ -50,17 +50,28 @@ function mlNewsAndEventsExporting( &$article ) {
 
 //	if (strstr($mTitle->getText(), 'News and Events')) {
 		$naeTitle= Title::newFromURL('Template:News and Events');
+		$naeTitle->invalidateCache();
 
-		$naeArticle =& new Article($naeTitle);
+		$naeArticle = new Article($naeTitle);
 		$naeText =& $naeArticle->getContent();
+
+		// we're supposed to use Revision over Article, but I can't get it to work
+//		$naeRevision = new Revision($naeTitle);
+//		$naeText =& $naeRevision->getText();
 
 		$this->mTemplates = array();
 		$wgParser->disableCache();
 		$wgParser->OutputType(OT_WIKI);
-		$pText = $wgParser->parse($naeText, $naeTitle,
+		$pText =& $wgParser->parse($naeText, $naeTitle,
 			new ParserOptions(), false, true);
 
+//		$pText->setCacheTime(-1);
+
 		$text = $pText->getText();
+
+		$rawFile = fopen('/data/www/chucker/myst/community/docs/wiki/rawfile', 'w');
+		fwrite($rawFile, $naeText.$text.$pText->getCacheTime());
+		fclose($rawFile);
 
 		$text = preg_replace('/<\/h2>/', '\\1</h2>
 ', $text); // make sure there's a linebreak after every monthly header
