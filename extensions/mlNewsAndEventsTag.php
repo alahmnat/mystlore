@@ -54,10 +54,11 @@ function mlNewsAndEventsExporting( &$article ) {
 		$naeArticle =& new Article($naeTitle);
 		$naeText =& $naeArticle->getContent();
 
+		$this->mTemplates = array();
 		$wgParser->disableCache();
 		$wgParser->OutputType(OT_WIKI);
 		$pText = $wgParser->parse($naeText, $naeTitle,
-			new ParserOptions(), false, false);
+			new ParserOptions(), false, true);
 
 		$text = $pText->getText();
 
