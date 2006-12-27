@@ -76,7 +76,7 @@ PRODID:-//MYSTlore/MYSTlore//NONSGML v1.0//EN
 ';
 
 		foreach( $array as $key => $value ) {
-			if ($value == '</li></ul>') {
+			if (($value == '</li></ul>') || ! (preg_match('/[A-Za-z0-9]+/', $value))) {
 				unset($array[$key]);
 				continue;
 			}
