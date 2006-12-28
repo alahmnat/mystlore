@@ -26,10 +26,8 @@
 // 1.0d1, Soeren Kuklau, 2006-12-17
 // Initial version
 
-//require_once( 'includes/Parser.php' );
-
 $wgExtensionFunctions[] = "mlNewsAndEventsTag";
-$wgHooks['ArticleSave'][] = "mlNewsAndEventsExporting" ;
+$wgHooks['ArticleSaveComplete'][] = "mlNewsAndEventsExporting" ;
 
 function mlNewsAndEventsTag() {
 	global $wgParser;
@@ -55,23 +53,11 @@ function mlNewsAndEventsExporting( &$article ) {
 		$naeArticle = new Article($naeTitle);
 		$naeText =& $naeArticle->getContent();
 
-		// we're supposed to use Revision over Article, but I can't get it to work
-//		$naeRevision = new Revision($naeTitle);
-//		$naeText =& $naeRevision->getText();
-
-		$this->mTemplates = array();
-		$wgParser->disableCache();
 		$wgParser->OutputType(OT_WIKI);
 		$pText =& $wgParser->parse($naeText, $naeTitle,
 			new ParserOptions(), false, true);
 
-//		$pText->setCacheTime(-1);
-
 		$text = $pText->getText();
-
-		$rawFile = fopen('/data/www/chucker/myst/community/docs/wiki/rawfile', 'w');
-		fwrite($rawFile, $naeText.$text.$pText->getCacheTime());
-		fclose($rawFile);
 
 		$text = preg_replace('/<\/h2>/', '\\1</h2>
 ', $text); // make sure there's a linebreak after every monthly header
@@ -83,11 +69,6 @@ VERSION:2.0
 PRODID:-//MYSTlore/MYSTlore//NONSGML v1.0//EN
 ";
 
-		$testOutput = '';
-
-		$testOutput .= $naeTitle->getText().'
-';
-
 		srand((double) microtime() * 1000000);
 
 		foreach( $array as $key => $value ) {
@@ -95,10 +76,6 @@ PRODID:-//MYSTlore/MYSTlore//NONSGML v1.0//EN
 				unset($array[$key]);
 				continue;
 			}
-
-			$testOutput .= $key.'
-'.$value.'
-';
 
 			if (preg_match('/<div(.*)<h2>(.*)<\/h2>$/', $value, $matches)) { // monthly headers
 				$month = explode(' ', $matches[2]); // array with {month,year}
@@ -123,10 +100,6 @@ END:VEVENT
 
 		$icsOutput .= "END:VCALENDAR
 ";
-
-		$testFile = fopen('/data/www/chucker/myst/community/docs/wiki/testfile', 'w');
-		fwrite($testFile, $testOutput);
-		fclose($testFile);
 
 		$icsFile = fopen('/data/www/chucker/myst/community/docs/wiki/Events.ics', 'w');
 		fwrite($icsFile, $icsOutput);
