@@ -15,6 +15,8 @@ function mlNewsAndEventsTag() {
 	$wgParser->setHook("EventsCount", "renderEventsCount");
 	$wgParser->setHook("EventsCalendarSubscribeLink", "renderEventsCalendarSubscribeLink");
 	$wgParser->setHook("EventsCalendarDownloadLink", "renderEventsCalendarDownloadLink");
+	$wgParser->setHook("EventsFeedSubscribeLink", "renderEventsFeedSubscribeLink");
+	$wgParser->setHook("EventsFeedDownloadLink", "renderEventsFeedDownloadLink");
 }
 
 function mlNewsAndEventsExporting( &$article ) {
@@ -92,7 +94,80 @@ END:VEVENT
 }
 
 function exportRSS() { // not implemented
-	
+	global $wgParser;
+
+	$naeTitle= Title::newFromURL('Template:News and Events');
+	$naeTitle->invalidateCache();
+
+	$naeArticle = new Article($naeTitle);
+	$naeText =& $naeArticle->getContent();
+
+	$wgParser->OutputType(OT_WIKI);
+	$pText =& $wgParser->parse($naeText, $naeTitle,
+		new ParserOptions(), false, true);
+
+	$text = $pText->getText();
+
+	$text = preg_replace('/<\/h2>/', '\\1</h2>
+', $text); // make sure there's a linebreak after every monthly header
+
+	$array = preg_split('/[\n\r]+/', $text);
+
+	$rssOutput = "<?xml version=\"1.0\" encoding=\"utf-8\"?>
+<rss version=\"2.0\">
+	<channel>
+		<title>MYSTlore News and Events</title>
+		<link>http://www.mystlore.com/</link>
+		<description>News and Events for 'MYSTlore', a wiki for the Myst universe</description>
+		<language>en</language>
+		<copyright>Contributions licensed under the CC by-nc 2.5 license, unless otherwise specified. Refer to http://www.mystlore.com/wiki/MYSTlore:Legal_notice for more information.</copyright>
+
+		<webMaster>chucker@mystfans.com (Soeren Nils 'chucker' Kuklau</webMaster>
+		<docs>http://blogs.law.harvard.edu/tech/rss</docs>
+		<ttl>60</ttl>
+
+";
+
+	srand((double) microtime() * 1000000);
+
+	foreach( $array as $key => $value ) {
+		if (($value == '</li></ul>') || ! (preg_match('/[A-Za-z0-9]+/', $value))) {
+			unset($array[$key]);
+			continue;
+		}
+
+		if (preg_match('/<div(.*)<h2>(.*)<\/h2>$/', $value, $matches)) { // monthly headers
+			$month = explode(' ', $matches[2]); // array with {month,year}
+
+			$months = array('January','01', 'February','02', 'March'=>'03', 'April'=>'04', 'May'=>'05', 'June'=>'06', 'July'=>'07', 'August'=>'08', 'September'=>'09', 'October'=>'10', 'November'=>'11', 'December'=>'12');
+
+			$month[0] = $months[$month[0]]; // switch from month names to month numbers
+		}
+		else  { // not a monthly header; presumed an event
+			$line = explode(': ', $value);
+			preg_match('/[0-9]{2}/', $line[0], $matches);
+			unset($line[0]);
+
+			$day = $month[1].'-'.$month[0].'-'.$matches[0];
+
+			// strictly speaking, these are not the /publication/ dates...
+			// future dates (for upcoming scheduled events) may cause some readers to ignore those items. It is not a spec violation, however.
+			$rssOutput .= "		<item>
+			<pubDate>".strftime("%a, %d %b %Y %T %z", strtotime($day))."</pubDate>
+			<guid isPermaLink=\"false\">".md5(getmypid().uniqid(rand()).$_SERVER['SERVER_NAME'])."</guid>
+			<description>".strip_tags(implode(': ', $line))."</description>
+		</item>
+";
+		}
+	}
+
+	$rssOutput .= "	</channel>
+</rss>
+";
+
+	$rssFile = fopen('/data/www/chucker/myst/community/docs/wiki/Events.rss', 'w');
+	fwrite($rssFile, $rssOutput);
+	fclose($rssFile);
 }
 
 /* function renderAllEvents( $input, $argv, &$parser ) { // not implemented
@@ -207,6 +282,14 @@ function renderEventsCalendarSubscribeLink( $input, $argv, &$parser ) {
 
 function renderEventsCalendarDownloadLink( $input, $argv, &$parser ) {
 	return "<a href=\"http://www.mystlore.com/Events.ics\">".$input."</a>";
+}
+
+function renderEventsFeedSubscribeLink( $input, $argv, &$parser ) {
+	return "<a href=\"feed://www.mystlore.com/Events.rss\">".$input."</a>";
+}
+
+function renderEventsFeedDownloadLink( $input, $argv, &$parser ) {
+	return "<a href=\"http://www.mystlore.com/Events.rss\">".$input."</a>";
 }
 
 ?>
