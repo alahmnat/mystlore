@@ -88,6 +88,8 @@ PRODID:-//MYSTlore/MYSTlore//NONSGML v1.0//EN
 		$testOutput .= $naeTitle->getText().'
 ';
 
+		srand((double) microtime() * 1000000);
+
 		foreach( $array as $key => $value ) {
 			if (($value == '</li></ul>') || ! (preg_match('/[A-Za-z0-9]+/', $value))) {
 				unset($array[$key]);
@@ -111,6 +113,7 @@ PRODID:-//MYSTlore/MYSTlore//NONSGML v1.0//EN
 				unset($line[0]);
 
 				$icsOutput .= "BEGIN:VEVENT
+UID:".rand(0,999999)."-".time()."@mystlore.com
 DTSTART:".$month[1].$month[0].$matches[0]."
 SUMMARY:".strip_tags(implode(': ', $line))."
 END:VEVENT
