@@ -150,12 +150,29 @@ function exportRSS() { // not implemented
 
 			$day = $month[1].'-'.$month[0].'-'.$matches[0];
 
+			$rssOutput .= "		<item>
+";
+
+			$result=strip_tags(implode(': ',$line));
+
+			// parse per-event categories
+			$categories = preg_split('/\(\((.*?)\)\)/', $result, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
+			unset($categories[0]);
+			foreach($categories as $key=>$value) {
+				if (! (preg_match('/[A-Za-z0-9]+/', $value))) {
+					unset($categories[$key]);
+					continue;
+				}
+				$rssOutput .= "			<category>".$value."</category>
+";
+			}
+			$result = preg_replace('/\(\((.*?)\)\)/','',$result);
+
 			// strictly speaking, these are not the /publication/ dates...
 			// future dates (for upcoming scheduled events) may cause some readers to ignore those items. It is not a spec violation, however.
-			$rssOutput .= "		<item>
-			<pubDate>".strftime("%a, %d %b %Y %T %z", strtotime($day))."</pubDate>
+			$rssOutput .= "			<pubDate>".strftime("%a, %d %b %Y %T %z", strtotime($day))."</pubDate>
 			<guid isPermaLink=\"false\">".md5(getmypid().uniqid(rand()).$_SERVER['SERVER_NAME'])."</guid>
-			<description>".strip_tags(implode(': ', $line))."</description>
+			<description>".$result."</description>
 		</item>
 ";
 		}
