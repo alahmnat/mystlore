@@ -9,7 +9,7 @@ $wgHooks['ArticleSaveComplete'][] = "mlNewsAndEventsExporting" ;
 function mlNewsAndEventsTag() {
 	global $wgParser;
 
-//	$wgParser->setHook("AllEvents", "renderAllEvents");
+	$wgParser->setHook("AllEvents", "renderAllEvents");
 	$wgParser->setHook("RecentEvents", "renderRecentEvents");
 	$wgParser->setHook("UpcomingEvents", "renderUpcomingEvents");
 	$wgParser->setHook("EventsCount", "renderEventsCount");
@@ -170,8 +170,30 @@ function exportRSS() { // not implemented
 	fclose($rssFile);
 }
 
-/* function renderAllEvents( $input, $argv, &$parser ) { // not implemented
-} */
+function renderAllEvents( $input, $argv, &$parser ) {
+	// $input = $parser->replaceVariables($input); // load the template
+	// $input = $parser->replaceInternalLinks($input); // parse wiki links
+	// $input = $parser->replaceExternalLinks($input); // parse external links
+	// $input = $parser->doQuotes($input); // parse quote-based emphasis
+	// $input = $parser->formatHeadings($input); // parse monthly headers
+	$input = $parser->internalParse($input);
+
+	$array = preg_split('/[\n\r]+/', $input);
+
+	foreach( $array as $key => $value ) {
+		// parse per-event categories
+		$value = preg_replace('/\(\((.*?)\)\)/','<sup><strong>\\1</strong> • </sup>',$value);
+		$value = preg_replace('/ • <\/sup>$/','</sup>',$value); // get rid of the last occurence
+		$array[$key] = $value;
+	}
+
+	if (count($array) == 0) {
+		return "None.";
+	}
+
+	return implode('
+', $array);
+}
 
 function renderRecentEvents( $input, $argv, &$parser ) {
 	$maxItems =	$argv['maxitems'];
@@ -222,8 +244,6 @@ function renderRecentEvents( $input, $argv, &$parser ) {
 	// i.e., events closest to /right now/
 	return implode('
 ', array_slice($array, -$maxItems, $maxItems));
-
-//	return preg_replace('/\(\((.*?)\)\)/','<strong>\\1</strong>',$output);
 }
 
 function renderUpcomingEvents( $input, $argv, &$parser ) {
