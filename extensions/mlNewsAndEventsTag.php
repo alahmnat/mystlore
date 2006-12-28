@@ -190,6 +190,7 @@ function renderRecentEvents( $input, $argv, &$parser ) {
 			$month = explode(' ', $matches[1]); // array with {month,year}
 
 			unset($array[$key]);
+			continue;
 		}
 		else  { // not a monthly header; presumed an event]
 			$line = explode(': ', $value);
@@ -203,7 +204,13 @@ function renderRecentEvents( $input, $argv, &$parser ) {
 			// then we don't want it displayed
 			if (strtotime($day) >= time() || strtotime($day) < $maxTime) {
 				unset($array[$key]);
+				continue;
 			}
+
+			// parse per-event categories
+			$value = preg_replace('/\(\((.*?)\)\)/','<sup><strong>\\1</strong> • </sup>',$value);
+			$value = preg_replace('/ • <\/sup>$/','</sup>',$value); // get rid of the last occurence
+			$array[$key] = $value;
 		}
 	}
 
@@ -215,6 +222,8 @@ function renderRecentEvents( $input, $argv, &$parser ) {
 	// i.e., events closest to /right now/
 	return implode('
 ', array_slice($array, -$maxItems, $maxItems));
+
+//	return preg_replace('/\(\((.*?)\)\)/','<strong>\\1</strong>',$output);
 }
 
 function renderUpcomingEvents( $input, $argv, &$parser ) {
@@ -234,6 +243,7 @@ function renderUpcomingEvents( $input, $argv, &$parser ) {
 			$month = explode(' ', $matches[1]); // array with {month,year}
 
 			unset($array[$key]);
+			continue;
 		}
 		else  { // not a monthly header; presumed an event]
 			$line = explode(': ', $value);
@@ -247,7 +257,13 @@ function renderUpcomingEvents( $input, $argv, &$parser ) {
 			// then we don't want it displayed
 			if (strtotime($day) < time() || strtotime($day) > $maxTime) {
 				unset($array[$key]);
+				continue;
 			}
+
+			// parse per-event categories
+			$value = preg_replace('/\(\((.*?)\)\)/','<sup><strong>\\1</strong> • </sup>',$value);
+			$value = preg_replace('/ • <\/sup>$/','</sup>',$value); // get rid of the last occurence
+			$array[$key] = $value;
 		}
 	}
 
