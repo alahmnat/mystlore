@@ -77,9 +77,31 @@ PRODID:-//MYSTlore/MYSTlore//NONSGML v1.0//EN
 			unset($line[0]);
 
 			$icsOutput .= "BEGIN:VEVENT
-UID:".rand(0,999999)."-".time()."@mystlore.com
+";
+
+			$result = strip_tags(implode(': ',$line));
+
+			// parse per-event categories
+			$categories = preg_split('/\(\((.*?)\)\)/', $result, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
+			unset($categories[0]);
+			if (count($categories) > 0) {
+				$icsOutput .= "CATEGORIES:";
+			}
+			foreach($categories as $key=>$value) {
+				if (! (preg_match('/[A-Za-z0-9]+/', $value))) {
+					unset($categories[$key]);
+					continue;
+				}
+				$icsOutput .= $value.",";
+			}
+			$icsOutput = preg_replace('/,$/','
+',$icsOutput); // get rid of the last delimiter and add linebreak
+
+			$result = preg_replace('/\(\((.*?)\)\)/','',$result);
+
+			$icsOutput .= "UID:".rand(0,999999)."-".time()."@mystlore.com
 DTSTART:".$month[1].$month[0].$matches[0]."
-SUMMARY:".strip_tags(implode(': ', $line))."
+SUMMARY:".$result."
 END:VEVENT
 ";
 		}
