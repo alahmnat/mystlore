@@ -115,7 +115,7 @@ END:VEVENT
 	fclose($icsFile);
 }
 
-function exportRSS() { // not implemented
+function exportRSS() {
 	global $wgParser;
 
 	$naeTitle= Title::newFromURL('Template:News and Events');
