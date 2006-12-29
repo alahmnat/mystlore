@@ -19,7 +19,7 @@ function mlDidYouKnowExporting( &$article ) {
 	$rssFile = fopen('/data/www/chucker/myst/community/docs/wiki/DidYouKnow.rss', 'w');
 	fwrite($rssFile, "foo");
 	fclose($rssFile);
-	// only update if an DYK-related page was updated
+	// only update if a DYK-related page was updated
 	if (strstr($mTitle->getText(), 'DidYouKnow') || strstr($mTitle->getText(), 'Did You Know')) {
 		exportDYKRSS();
 	}
@@ -99,7 +99,7 @@ function renderDidYouKnow( $input, $argv, &$parser ) {
 
 	foreach ($array as $key=>$value) {
 		// remove items that don't start with a bullet point
-		if (! preg_match('/^*/', $value)) {
+		if (! preg_match('/^\*/', $value)) {
 			unset($array[$key]);
 			continue;
 		}
@@ -122,7 +122,7 @@ function renderDidYouKnowCount( $input, $argv, &$parser ) {
 
 	foreach ($array as $key=>$value) {
 		// remove items that don't start with a bullet point
-		if (! preg_match('/^*/', $value)) {
+		if (! preg_match('/^\*/', $value)) {
 			unset($array[$key]);
 			continue;
 		}
