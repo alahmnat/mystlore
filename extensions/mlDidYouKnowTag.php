@@ -61,8 +61,6 @@ function exportDYKRSS() {
 
 ";
 
-	srand((double) microtime() * 1000000);
-
 	foreach( $array as $key => $value ) {
 		// if it's not a list item, throw it out
 		if (! (preg_match('/<li>/', $value))) {
@@ -72,7 +70,7 @@ function exportDYKRSS() {
 
 		$rssOutput .= "		<item>
 ";
-		$rssOutput .= "			<guid isPermaLink=\"false\">".md5(getmypid().uniqid(rand()).$_SERVER['SERVER_NAME'])."</guid>
+		$rssOutput .= "			<guid isPermaLink=\"false\">".md5($result)."</guid>
 			<description>".strip_tags($value)."</description>
 		</item>
 ";

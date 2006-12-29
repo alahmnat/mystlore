@@ -56,8 +56,6 @@ VERSION:2.0
 PRODID:-//MYSTlore/MYSTlore//NONSGML v1.0//EN
 ";
 
-	srand((double) microtime() * 1000000);
-
 	foreach( $array as $key => $value ) {
 		if (($value == '</li></ul>') || ! (preg_match('/[A-Za-z0-9]+/', $value))) {
 			unset($array[$key]);
@@ -99,7 +97,7 @@ PRODID:-//MYSTlore/MYSTlore//NONSGML v1.0//EN
 
 			$result = preg_replace('/\(\((.*?)\)\)/','',$result);
 
-			$icsOutput .= "UID:".rand(0,999999)."-".time()."@mystlore.com
+			$icsOutput .= "UID:".md5($result)."@mystlore.com
 DTSTART:".$month[1].$month[0].$matches[0]."
 SUMMARY:".$result."
 END:VEVENT
@@ -150,8 +148,6 @@ function exportNAERSS() {
 
 ";
 
-	srand((double) microtime() * 1000000);
-
 	foreach( $array as $key => $value ) {
 		if (($value == '</li></ul>') || ! (preg_match('/[A-Za-z0-9]+/', $value))) {
 			unset($array[$key]);
@@ -193,7 +189,7 @@ function exportNAERSS() {
 			// strictly speaking, these are not the /publication/ dates...
 			// future dates (for upcoming scheduled events) may cause some readers to ignore those items. It is not a spec violation, however.
 			$rssOutput .= "			<pubDate>".strftime("%a, %d %b %Y %T %z", strtotime($day))."</pubDate>
-			<guid isPermaLink=\"false\">".md5(getmypid().uniqid(rand()).$_SERVER['SERVER_NAME'])."</guid>
+			<guid isPermaLink=\"false\">".md5($result)."</guid>
 			<description>".$result."</description>
 		</item>
 ";
