@@ -70,7 +70,7 @@ function exportDYKRSS() {
 
 		$rssOutput .= "		<item>
 ";
-		$rssOutput .= "			<guid isPermaLink=\"false\">".md5($result)."</guid>
+		$rssOutput .= "			<guid isPermaLink=\"false\">".md5($value)."</guid>
 			<description>".strip_tags($value)."</description>
 		</item>
 ";
