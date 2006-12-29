@@ -24,14 +24,14 @@ function mlNewsAndEventsExporting( &$article ) {
 
 	// only update if an NaE-related page was updated
 	if (strstr($mTitle->getText(), 'News and Events')) {
-		exportiCalendar();
-		exportRSS();
+		exportNAEiCalendar();
+		exportNAERSS();
 	}
 
 	return true; // it'll assume an edit conflict otherwise
 }
 
-function exportiCalendar() {
+function exportNAEiCalendar() {
 	global $wgParser;
 
 	$naeTitle= Title::newFromURL('Template:News and Events');
@@ -115,7 +115,7 @@ END:VEVENT
 	fclose($icsFile);
 }
 
-function exportRSS() {
+function exportNAERSS() {
 	global $wgParser;
 
 	$naeTitle= Title::newFromURL('Template:News and Events');
