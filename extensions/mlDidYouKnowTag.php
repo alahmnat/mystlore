@@ -19,12 +19,17 @@ function renderDidYouKnow( $input, $argv, &$parser ) {
 	$input = $parser->replaceInternalLinks($input); // parse wiki links
 	$input = $parser->doQuotes($input); // parse quote-based emphasis
 
-	$array = explode("*", $input);
-	unset($array[0]); // FIXME: this should be replaced with code that removes any improper lines (e.g., ones that don't start with *)
+	$array = preg_split('/[\n\r]+/', $input);
 
-	$output .= $array[array_rand($array)];
+	foreach ($array as $key=>$value) {
+		// remove items that don't start with a bullet point
+		if (! preg_match('/^*/', $value)) {
+			unset($array[$key]);
+			continue;
+		}
+	}
 
-	return "<div class=\"mlDidYouKnow\">".$output."</div>";
+	return "<div class=\"mlDidYouKnow\">".$array[array_rand($array)]."</div>";
 }
 
 function renderMainPagePurgeLink( $input, $argv, &$parser ) {
@@ -36,8 +41,16 @@ function renderMainPagePurgeLink( $input, $argv, &$parser ) {
 
 function renderDidYouKnowCount( $input, $argv, &$parser ) {
 	$input = $parser->replaceVariables($input); // load the template
-	$array = explode("*", $input);
-	unset($array[0]); // FIXME: this should be replaced with code that removes any improper lines (e.g., ones that don't start with *)
+
+	$array = preg_split('/[\n\r]+/', $input);
+
+	foreach ($array as $key=>$value) {
+		// remove items that don't start with a bullet point
+		if (! preg_match('/^*/', $value)) {
+			unset($array[$key]);
+			continue;
+		}
+	}
 
 	return count($array);
 }
