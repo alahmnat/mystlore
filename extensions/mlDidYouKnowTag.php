@@ -2,14 +2,6 @@
 
 // MYSTlore DidYouKnow Tag for MediaWiki
 
-// 1.1.0, Soeren Kuklau, 2006-12-08
-// Internal link and quotes parsing
-
-// 1.0.0, Soeren Kuklau, 2006-12-08
-// Initial version
-
-//require_once( 'includes/Parser.php' );
-
 $wgExtensionFunctions[] = "mlDidYouKnowTag";
 
 function mlDidYouKnowTag() {
@@ -23,8 +15,6 @@ function mlDidYouKnowTag() {
 function renderDidYouKnow( $input, $argv, &$parser ) {
 	srand((float) microtime() * 10000000);
 
-	//return "test";
-
 	$input = $parser->replaceVariables($input); // load the template
 	$input = $parser->replaceInternalLinks($input); // parse wiki links
 	$input = $parser->doQuotes($input); // parse quote-based emphasis
@@ -32,7 +22,6 @@ function renderDidYouKnow( $input, $argv, &$parser ) {
 	$array = explode("*", $input);
 	unset($array[0]); // FIXME: this should be replaced with code that removes any improper lines (e.g., ones that don't start with *)
 
-//	$output = implode("--", $array);
 	$output .= $array[array_rand($array)];
 
 	return "<div class=\"mlDidYouKnow\">".$output."</div>";
