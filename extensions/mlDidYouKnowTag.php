@@ -11,14 +11,13 @@ function mlDidYouKnowTag() {
 	$wgParser->setHook("DidYouKnow", "renderDidYouKnow");
 	$wgParser->setHook("MainPagePurgeLink", "renderMainPagePurgeLink");
 	$wgParser->setHook("DidYouKnowCount", "renderDidYouKnowCount");
+	$wgParser->setHook("DidYouKnowFeedSubscribeLink", "renderDidYouKnowFeedSubscribeLink");
+	$wgParser->setHook("DidYouKnowFeedDownloadLink", "renderDidYouKnowFeedDownloadLink");
 }
 
 function mlDidYouKnowExporting( &$article ) {
 	$mTitle =& $article->getTitle();
 
-	$rssFile = fopen('/data/www/chucker/myst/community/docs/wiki/DidYouKnow.rss', 'w');
-	fwrite($rssFile, "foo");
-	fclose($rssFile);
 	// only update if a DYK-related page was updated
 	if (strstr($mTitle->getText(), 'DidYouKnow') || strstr($mTitle->getText(), 'Did You Know')) {
 		exportDYKRSS();
@@ -130,5 +129,13 @@ function renderDidYouKnowCount( $input, $argv, &$parser ) {
 	}
 
 	return count($array);
+}
+
+function renderDidYouKnowFeedSubscribeLink( $input, $argv, &$parser ) {
+	return "<a href=\"feed://www.mystlore.com/DidYouKnow.rss\">".$input."</a>";
+}
+
+function renderDidYouKnowFeedDownloadLink( $input, $argv, &$parser ) {
+	return "<a href=\"http://www.mystlore.com/DidYouKnow.rss\">".$input."</a>";
 }
 ?>
