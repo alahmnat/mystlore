@@ -103,6 +103,7 @@ function renderDidYouKnow( $input, $argv, &$parser ) {
 			unset($array[$key]);
 			continue;
 		}
+		$array[$key] = preg_replace('/^[\*\ ]+/', '', $value);
 	}
 
 	return "<div class=\"mlDidYouKnow\">".$array[array_rand($array)]."</div>";
