@@ -80,7 +80,7 @@ PRODID:-//MYSTlore/MYSTlore//NONSGML v1.0//EN
 		if (preg_match('/<div(.*)<h2>(.*)<\/h2>$/', $value, $matches)) { // monthly headers
 			$month = explode(' ', $matches[2]); // array with {month,year}
 
-			$months = array('January','01', 'February','02', 'March'=>'03', 'April'=>'04', 'May'=>'05', 'June'=>'06', 'July'=>'07', 'August'=>'08', 'September'=>'09', 'October'=>'10', 'November'=>'11', 'December'=>'12');
+			$months = array('January'=>'01', 'February'=>'02', 'March'=>'03', 'April'=>'04', 'May'=>'05', 'June'=>'06', 'July'=>'07', 'August'=>'08', 'September'=>'09', 'October'=>'10', 'November'=>'11', 'December'=>'12');
 
 			$month[0] = $months[$month[0]]; // switch from month names to month numbers
 		}
