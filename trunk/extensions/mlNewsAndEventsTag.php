@@ -113,7 +113,7 @@ PRODID:-//MYSTlore/MYSTlore//NONSGML v1.0//EN
 			$result = preg_replace('/\(\((.*?)\)\)/','',$result);
 
 			$icsOutput .= "UID:".md5($result)."@mystlore.com
-DTSTART:".$month[1].$month[0].$matches[0]."
+DTSTART;VALUE=DATE:".$month[1].$month[0].$matches[0]."
 SUMMARY:".$result."
 END:VEVENT
 ";
