@@ -1,0 +1,55 @@
+#summary Indexing format, and how to create and parse it
+#labels Phase-Design
+
+= Format =
+
+The index consists of two files: an `.entryIndex` file and a `.termIndex` one.
+
+== .entryIndex ==
+
+The purpose of the entryIndex is to list all dictionary entries, one per line, and associated Metadata. The entries are automatically sorted alphabetically because, at the time of indexing, the dictionary itself is always already sorted. (Therefore, when creating the index and iterating through the file, the order is already correct, and will be preserved.)
+
+A line looks like this:
+
+{{{
+Dictionary Entry|ID|Byte Offset|Size in Bytes
+}}}
+
+A few examples:
+
+{{{
+Atrus|129|4803|300
+D'ni timekeeping|274|18520|482
+}}}
+
+Due to the aforementioned pre-sorted nature, a higher ID always implies a higher byte offset, and a lower ID always implies a lower byte offset.
+
+== .termIndex ==
+
+The termIndex lists all noteworthy terms occurring in the dictionary, one per line; that is, it represents everything that can be (successfully) searched for. The indexing daemon needs to ensure that the termIndex is sorted alphabetically, and that no term appears multiple times.
+
+A line looks like this:
+
+{{{
+Search Term|Dictionary Entry ID|Dictionary Entry ID|…
+}}}
+
+An example:
+
+{{{
+Ti'ana|129|220|438|853
+}}}
+
+Based on the above, the search query "Ti'ana" should give the articles with the IDs 129, 220, 438 and 853 as results. Above, the entry "Atrus" was defined as ID 129; therefore, according to the index, the term "Ti'ana" appears in the article "Atrus".
+
+= Create =
+
+…
+
+= Parse =
+
+…
+
+
+
+
