@@ -57,9 +57,8 @@ For each line, the indexer needs to do the following:
    * If there, append existing lines accordingly
   # Always keep `.termIndex` sorted
 
+Tentatively, the indexer is to be a CLI tool named `MYSTloreDictionaryIndexCreator`. `launchd` might run this tool automatically whenever the dictionary body file changes, or we might instead manually invoke it after any update.
+
 = Parse =
 
 When the user enters a search query, the `.termIndex` file needs to be accessed. It's easiest to create an array containing one object per line, then checking the first value in each of them, namely the search term field. If a line matches, the `.entryIndex` file needs to be read to check for each matching entry ID (i.e., line number) to get their respective offsets and sizes. Finally, if the user chooses a result, the dictionary body itself gets read.
-
-
-
