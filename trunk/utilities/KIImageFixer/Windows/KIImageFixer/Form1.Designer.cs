@@ -64,7 +64,6 @@ namespace KIImageFixer
             this.label1.Size = new System.Drawing.Size(131, 24);
             this.label1.TabIndex = 1;
             this.label1.Text = "KI Image Fixer";
-            this.label1.Click += new System.EventHandler(this.label1_Click);
             // 
             // textBox1
             // 
@@ -87,7 +86,6 @@ namespace KIImageFixer
             this.radioButton1.TabIndex = 4;
             this.radioButton1.Text = "Overwrite originals";
             this.radioButton1.UseVisualStyleBackColor = true;
-            this.radioButton1.CheckedChanged += new System.EventHandler(this.radioButton1_CheckedChanged);
             // 
             // radioButton2
             // 
@@ -100,10 +98,10 @@ namespace KIImageFixer
             this.radioButton2.TabStop = true;
             this.radioButton2.Text = "Create corrected copies, leaving originals alone";
             this.radioButton2.UseVisualStyleBackColor = true;
-            this.radioButton2.CheckedChanged += new System.EventHandler(this.radioButton2_CheckedChanged);
             // 
             // button2
             // 
+            this.button2.Enabled = false;
             this.button2.Location = new System.Drawing.Point(189, 60);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(75, 23);
@@ -179,7 +177,6 @@ namespace KIImageFixer
             this.Controls.Add(this.label1);
             this.Name = "Form1";
             this.Text = "KI Image Fixer";
-            this.Load += new System.EventHandler(this.Form1_Load);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.panel2.ResumeLayout(false);
