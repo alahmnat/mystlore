@@ -16,31 +16,6 @@ namespace KIImageFixer
             InitializeComponent();
         }
 
-        private void Form1_Load(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label2_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void radioButton1_CheckedChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void radioButton2_CheckedChanged(object sender, EventArgs e)
-        {
-
-        }
-
         private void button2_Click(object sender, EventArgs e)
         {
             progressBar1.Maximum = openFileDialog1.FileNames.Length;
@@ -51,7 +26,7 @@ namespace KIImageFixer
             foreach (string filename in openFileDialog1.FileNames)
             {
                 bool isBroken = true;
-                //MessageBox.Show(filename);
+
                 if (File.Exists(filename))
                 {
                     label3.Text = System.IO.Path.GetFileName(filename) + " (" + progressBar1.Value +
@@ -102,8 +77,6 @@ namespace KIImageFixer
 
                     newBinaryWriter.Close();
                     newFileStream.Close();
-
-//                    MessageBox.Show(newFilename);
                 }
                 progressBar1.PerformStep();
             }
@@ -115,29 +88,7 @@ namespace KIImageFixer
         {
             openFileDialog1.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
-            {
-                string fileNames = "";
-                foreach (string s in openFileDialog1.FileNames)
-                {
-                    fileNames += s;
-                }
-//                MessageBox.Show(fileNames);
-            }
-        }
-
-        private void openFileDialog1_FileOk(object sender, CancelEventArgs e)
-        {
-
-        }
-
-        private void panel1_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-        private void textBox1_TextChanged(object sender, EventArgs e)
-        {
-
+                button2.Enabled = true;
         }
     }
 }
