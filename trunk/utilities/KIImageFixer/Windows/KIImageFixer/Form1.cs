@@ -6,6 +6,7 @@ using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
+using System.Reflection;
 
 namespace KIImageFixer
 {
@@ -14,6 +15,8 @@ namespace KIImageFixer
         public Form1()
         {
             InitializeComponent();
+
+            versionText.Text = "Version " + System.Windows.Forms.Application.ProductVersion.ToString() + ", by chucker";
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -89,6 +92,16 @@ namespace KIImageFixer
             openFileDialog1.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
                 button2.Enabled = true;
+        }
+
+        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            System.Diagnostics.Process.Start("http://code.google.com/p/mystlore");
+        }
+
+        private void linkLabel2_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            System.Diagnostics.Process.Start("http://www.opensource.org/licenses/mit-license.php");
         }
     }
 }
