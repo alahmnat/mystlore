@@ -75,7 +75,6 @@ namespace KIImageFixer
             this.textBox1.Size = new System.Drawing.Size(264, 144);
             this.textBox1.TabIndex = 3;
             this.textBox1.Text = resources.GetString("textBox1.Text");
-            this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             // 
             // radioButton1
             // 
@@ -124,7 +123,6 @@ namespace KIImageFixer
             this.openFileDialog1.FileName = "openFileDialog1";
             this.openFileDialog1.Filter = "JPEG Images|*.jpg";
             this.openFileDialog1.Multiselect = true;
-            this.openFileDialog1.FileOk += new System.ComponentModel.CancelEventHandler(this.openFileDialog1_FileOk);
             // 
             // panel1
             // 
@@ -136,7 +134,6 @@ namespace KIImageFixer
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(264, 87);
             this.panel1.TabIndex = 8;
-            this.panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.panel1_Paint);
             // 
             // panel2
             // 
@@ -175,6 +172,7 @@ namespace KIImageFixer
             this.Controls.Add(this.label2);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.label1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form1";
             this.Text = "KI Image Fixer";
             this.panel1.ResumeLayout(false);
