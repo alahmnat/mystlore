@@ -8,8 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		5FB033210B81C15A0003C4AA /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 5FB033200B81C15A0003C4AA /* AppDelegate.m */; };
-		5FC66F750B8DB896009241E5 /* KI_Device.icns in Resources */ = {isa = PBXBuildFile; fileRef = 5FC66F740B8DB896009241E5 /* KI_Device.icns */; };
-		5FC66FB20B8DC230009241E5 /* TransparentBackgroundTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5FC66FB10B8DC230009241E5 /* TransparentBackgroundTextView.m */; };
 		8D11072A0486CEB800E47090 /* MainMenu.nib in Resources */ = {isa = PBXBuildFile; fileRef = 29B97318FDCFA39411CA2CEA /* MainMenu.nib */; };
 		8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165CFE840E0CC02AAC07 /* InfoPlist.strings */; };
 		8D11072D0486CEB800E47090 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; settings = {ATTRIBUTES = (); }; };
@@ -27,11 +25,8 @@
 		32CA4F630368D1EE00C91783 /* KIImageFixer_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KIImageFixer_Prefix.pch; sourceTree = "<group>"; };
 		5FB0331F0B81C15A0003C4AA /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		5FB033200B81C15A0003C4AA /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		5FC66F740B8DB896009241E5 /* KI_Device.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = KI_Device.icns; sourceTree = "<group>"; };
-		5FC66FB00B8DC230009241E5 /* TransparentBackgroundTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TransparentBackgroundTextView.h; sourceTree = "<group>"; };
-		5FC66FB10B8DC230009241E5 /* TransparentBackgroundTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TransparentBackgroundTextView.m; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		8D1107320486CEB800E47090 /* KI Image Fixer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "KI Image Fixer.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		8D1107320486CEB800E47090 /* KIImageFixer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KIImageFixer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -74,7 +69,7 @@
 		19C28FACFE9D520D11CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8D1107320486CEB800E47090 /* KI Image Fixer.app */,
+				8D1107320486CEB800E47090 /* KIImageFixer.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -98,8 +93,6 @@
 				5FB033200B81C15A0003C4AA /* AppDelegate.m */,
 				32CA4F630368D1EE00C91783 /* KIImageFixer_Prefix.pch */,
 				29B97316FDCFA39411CA2CEA /* main.m */,
-				5FC66FB00B8DC230009241E5 /* TransparentBackgroundTextView.h */,
-				5FC66FB10B8DC230009241E5 /* TransparentBackgroundTextView.m */,
 			);
 			name = "Other Sources";
 			sourceTree = "<group>";
@@ -107,7 +100,6 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				5FC66F740B8DB896009241E5 /* KI_Device.icns */,
 				8D1107310486CEB800E47090 /* Info.plist */,
 				089C165CFE840E0CC02AAC07 /* InfoPlist.strings */,
 				29B97318FDCFA39411CA2CEA /* MainMenu.nib */,
@@ -127,9 +119,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		8D1107260486CEB800E47090 /* KI Image Fixer */ = {
+		8D1107260486CEB800E47090 /* KIImageFixer */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "KI Image Fixer" */;
+			buildConfigurationList = C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "KIImageFixer" */;
 			buildPhases = (
 				8D1107290486CEB800E47090 /* Resources */,
 				8D11072C0486CEB800E47090 /* Sources */,
@@ -139,10 +131,10 @@
 			);
 			dependencies = (
 			);
-			name = "KI Image Fixer";
+			name = KIImageFixer;
 			productInstallPath = "$(HOME)/Applications";
 			productName = KIImageFixer;
-			productReference = 8D1107320486CEB800E47090 /* KI Image Fixer.app */;
+			productReference = 8D1107320486CEB800E47090 /* KIImageFixer.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -155,7 +147,7 @@
 			mainGroup = 29B97314FDCFA39411CA2CEA /* KIImageFixer */;
 			projectDirPath = "";
 			targets = (
-				8D1107260486CEB800E47090 /* KI Image Fixer */,
+				8D1107260486CEB800E47090 /* KIImageFixer */,
 			);
 		};
 /* End PBXProject section */
@@ -167,7 +159,6 @@
 			files = (
 				8D11072A0486CEB800E47090 /* MainMenu.nib in Resources */,
 				8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */,
-				5FC66F750B8DB896009241E5 /* KI_Device.icns in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -180,7 +171,6 @@
 			files = (
 				8D11072D0486CEB800E47090 /* main.m in Sources */,
 				5FB033210B81C15A0003C4AA /* AppDelegate.m in Sources */,
-				5FC66FB20B8DC230009241E5 /* TransparentBackgroundTextView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -216,7 +206,7 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
-				PRODUCT_NAME = "KI Image Fixer";
+				PRODUCT_NAME = KIImageFixer;
 				WRAPPER_EXTENSION = app;
 				ZERO_LINK = YES;
 			};
@@ -233,7 +223,7 @@
 				GCC_MODEL_TUNING = G5;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
-				PRODUCT_NAME = "KI Image Fixer";
+				PRODUCT_NAME = KIImageFixer;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
@@ -261,7 +251,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "KI Image Fixer" */ = {
+		C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "KIImageFixer" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C01FCF4B08A954540054247B /* Debug */,

@@ -12,12 +12,6 @@
 @interface AppDelegate : NSObject {
 	IBOutlet NSWindow * mainWindow;
 	IBOutlet NSMatrix * overwriteSettingCheckboxes;
-	IBOutlet NSTextField * versionText;
-
-	IBOutlet NSTabView * textTabs;
-	IBOutlet NSTextView * instructionsText;
-	IBOutlet NSTextView * legalText;
-
 	IBOutlet NSButton * proceedButton;
 
 	IBOutlet NSPanel * processingSheet;

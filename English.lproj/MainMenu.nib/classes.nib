@@ -5,8 +5,6 @@
             CLASS = AppDelegate; 
             LANGUAGE = ObjC; 
             OUTLETS = {
-                instructionsText = NSTextView; 
-                legalText = NSTextView; 
                 mainWindow = NSWindow; 
                 overwriteSettingCheckboxes = NSMatrix; 
                 proceedButton = NSButton; 
@@ -14,17 +12,10 @@
                 processingProgress = NSProgressIndicator; 
                 processingSheet = NSPanel; 
                 processingTextualProgress = NSTextField; 
-                textTabs = NSTabView; 
-                versionText = NSTextField; 
             }; 
             SUPERCLASS = NSObject; 
         }, 
-        {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
-        {
-            CLASS = TransparentBackgroundTextView; 
-            LANGUAGE = ObjC; 
-            SUPERCLASS = NSTextView; 
-        }
+        {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }
     ); 
     IBVersion = 1; 
 }

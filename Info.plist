@@ -5,11 +5,11 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleExecutable</key>
-	<string>KI Image Fixer</string>
+	<string>${EXECUTABLE_NAME}</string>
 	<key>CFBundleIconFile</key>
-	<string>KI_Device</string>
+	<string></string>
 	<key>CFBundleIdentifier</key>
-	<string>com.mystfans.chucker.KIImageFixer</string>
+	<string>com.yourcompany.KIImageFixer</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
@@ -19,8 +19,6 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>1.0</string>
-	<key>CFBundleShortVersionString</key>
 	<string>1.0</string>
 	<key>NSMainNibFile</key>
 	<string>MainMenu</string>
