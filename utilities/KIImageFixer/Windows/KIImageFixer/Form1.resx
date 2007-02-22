@@ -127,6 +127,11 @@ Do not apply this tool on non-JPEG images or any other files, especially not in 
   <metadata name="openFileDialog1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
   </metadata>
+  <data name="textBox2.Text" xml:space="preserve">
+    <value>Myst Online: Uru Live™ is a trademark of Cyan Worlds, Inc., under license to Turner Broadcasting System, Inc., a Time Warner Company.
+
+The KI and the KI design depicted in the KI Image Fixer icon are © by Cyan Worlds, Inc. All rights reserved.</value>
+  </data>
   <metadata name="$this.TrayHeight" type="System.Int32, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>44</value>
   </metadata>
