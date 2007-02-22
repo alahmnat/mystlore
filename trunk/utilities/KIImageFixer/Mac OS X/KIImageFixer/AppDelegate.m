@@ -91,4 +91,18 @@
 
 	selectedFiles = [[panel filenames] retain];
 }
+
+- (void) awakeFromNib {
+	[instructionsText setDrawsBackground:NO];
+	[legalText setDrawsBackground:NO];
+
+	[versionText setStringValue:[[@"Version " stringByAppendingString:[[[NSBundle mainBundle]
+		infoDictionary] objectForKey:@"CFBundleVersion"]] stringByAppendingString:@", by chucker"]];
+	[textTabs selectTabViewItemWithIdentifier:@"instructions"];
+}
+
+
+- (BOOL)applicationShouldTerminateAfterLastWindowClosed:(NSApplication *)theApplication {
+	return true;
+}
 @end
