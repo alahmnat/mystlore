@@ -1,0 +1,52 @@
+diff -dw --unified=0 -r _distribution-2.2.2/cache/lang_cache/en/lang_error.php bump-warning/cache/lang_cache/en/lang_error.php
+--- _distribution-2.2.2/cache/lang_cache/en/lang_error.php	2007-01-03 07:36:32.000000000 +0100
++++ bump-warning/cache/lang_cache/en/lang_error.php	2007-02-28 19:18:17.000000000 +0100
+@@ -4,0 +5,5 @@
++// Begin MYSTcommunity bump warning modification
++
++'_mc_bump_days_exceeded' => "This topic has last been replied to over 180 days ago. Replying to old threads may cause confusion and is therefore generally discouraged past 30 days, and disallowed altogether after 180 days. We recommend you create a new thread, referencing this one. Please review the <a href=\"http://www.mystcommunity.com/board/index.php?showtopic=12941&view=findpost&p=331369\">Bumping</a> section in our <a href=\"http://www.mystcommunity.com/board/index.php?showtopic=12941\">Posting and Usage Guidelines</a> for more details.",
++
++// End MYSTcommunity bump warning modification
+diff -dw --unified=0 -r _distribution-2.2.2/cache/skin_cache/cacheid_3/skin_post.php bump-warning/cache/skin_cache/cacheid_3/skin_post.php
+--- _distribution-2.2.2/cache/skin_cache/cacheid_3/skin_post.php	2007-02-28 20:54:31.000000000 +0100
++++ bump-warning/cache/skin_cache/cacheid_3/skin_post.php	2007-02-28 20:52:32.000000000 +0100
+@@ -13,0 +14,15 @@
++// <ips:_mc_bump_warning:desc::trigger:>
++//===========================================================================
++function _mc_bump_warning($daysOld="") {
++$IPBHTML = "";
++//--starthtml--//
++$IPBHTML .= "<div class=\"borderwrap\">
++	<h3><img src='style_images/1/nav_m.gif' border='0'  alt='&gt;' width='8' height='8' />&nbsp;Bump Warning</h3>
++	<p class=\"ipb_bump-warning\">This topic has last been replied to <em>over 30 days ago</em> ($daysOld days). Replying to old threads may cause confusion and is therefore generally discouraged, unless you really feel that your reply will add relevant information to the discussion. We recommend you create a new thread, referencing this one. Please review the <a href=\"http://www.mystcommunity.com/board/index.php?showtopic=12941&view=findpost&p=331369\"><strong>Bumping</strong></a> section in our <a href=\"http://www.mystcommunity.com/board/index.php?showtopic=12941\"><strong>Posting and Usage Guidelines</strong></a> for more details.</p>
++</div>
++<br />";
++//--endhtml--//
++return $IPBHTML;
++}
++
++//===========================================================================
+diff -dw --unified=0 -r _distribution-2.2.2/sources/classes/post/class_post_reply.php bump-warning/sources/classes/post/class_post_reply.php
+--- _distribution-2.2.2/sources/classes/post/class_post_reply.php	2006-10-11 09:55:48.000000000 +0200
++++ bump-warning/sources/classes/post/class_post_reply.php	2007-02-28 20:48:41.000000000 +0100
+@@ -604,0 +605,20 @@
++		// Begin MYSTcommunity bump warning modification
++
++		$daysDiff = round((time() - $this->topic['last_post']) / 86400);
++
++		// After 30 days, warn
++		if ($daysDiff > 30)
++		{
++			// After 180 days, disallow unless the user is a global moderator
++			if (($daysDiff > 180)) and ($this->ipsclass->member['g_is_supmod'] != 1))
++			{
++				$this->ipsclass->Error( array( LEVEL => 1, MSG => '_mc_bump_days_exceeded') );
++			}
++			else
++			{
++				$this->output .= "\n". $this->ipsclass->compiled_templates['skin_post']->_mc_bump_warning($daysDiff);
++			}
++		}
++
++		// End MYSTcommunity bump warning modification
++
