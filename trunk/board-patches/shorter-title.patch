@@ -1,0 +1,13 @@
+diff -dw --unified=0 -r _distribution-2.2.2/sources/action_public/boards.php shorter-title/sources/action_public/boards.php
+--- _distribution-2.2.2/sources/action_public/boards.php	2007-01-16 17:59:04.000000000 +0100
++++ shorter-title/sources/action_public/boards.php	2007-03-01 09:17:53.000000000 +0100
+@@ -190,8 +190 @@
+-        $cp = " (Powered by Invision Power Board)";
+-        
+-        if ($this->ipsclass->vars['ips_cp_purchase'])
+-        {
+-        	$cp = "";
+-        }
+-        
+-        $this->ipsclass->print->do_output( array( 'TITLE' => $this->ipsclass->vars['board_name'].$cp, 'JS' => 0, 'NAV' => $this->nav ) );
++        $this->ipsclass->print->do_output( array( 'TITLE' => $this->ipsclass->vars['board_name'], 'JS' => 0, 'NAV' => $this->nav ) );
