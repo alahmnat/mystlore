@@ -1,6 +1,6 @@
-diff -dw --unified=0 -r _distribution-2.2.2/sources/classes/post/class_post_new.php irc-notify/sources/classes/post/class_post_new.php
+diff -dw --unified=0 -x '\.DS_Store' -r _distribution-2.2.2/sources/classes/post/class_post_new.php irc-notify/sources/classes/post/class_post_new.php
 --- _distribution-2.2.2/sources/classes/post/class_post_new.php	2006-10-25 15:16:34.000000000 +0200
-+++ irc-notify/sources/classes/post/class_post_new.php	2007-03-01 15:00:37.000000000 +0100
++++ irc-notify/sources/classes/post/class_post_new.php	2007-03-06 17:22:45.000000000 +0100
 @@ -343,0 +344,23 @@
 +		// Begin MediaWiki-compatible MYSTcommunity IRC notify modification
 +
@@ -13,21 +13,21 @@ diff -dw --unified=0 -r _distribution-2.2.2/sources/classes/post/class_post_new.
 +
 +		$IRCconn = socket_create( AF_INET, SOCK_DGRAM, SOL_UDP );
 +		if ( $IRCconn ) {
++			$IRCline = "MYSTcommunity New Topic: \00307".$this->topic['title']."\003 ".$this->ipsclass->vars['board_url']."/board/index.php?showtopic=".$this->topic['tid']." \0035in\003 \00310".$this->forum['name']." \003 \0035by\003 ".$this->topic['starter_name'];
++
 +			if ($update_array['starter_id']) {
-+				$IRCline = "MYSTcommunity New Topic: \00307".$this->topic['title']."\003 http://www.mystcommunity.com/board/index.php?showtopic=".$this->topic['tid']." \0035in\003 \00310".$this->forum['name']." \003 \0035by\003 ".$this->topic['starter_name']."[".$update_array['starter_id']."]";
++				$IRCline .= "[".$update_array['starter_id']."]";
 +			}
-+			else {
-+				$IRCline = "MYSTcommunity New Topic: \00307".$this->topic['title']."\003 http://www.mystcommunity.com/board/index.php?showtopic=".$this->topic['tid']." \0035in\003 \00310".$this->forum['name']." \003 \0035by\003 ".$this->topic['starter_name'];
-+			}
++
 +			socket_sendto( $IRCconn, $IRCprefix.$IRCline, strlen($IRCprefix)+strlen($IRCline), 0, "mystchat.homeip.net", 51666 );
 +			socket_close( $IRCconn );
 +		}
 +
 +		// End MediaWiki-compatible MYSTcommunity IRC notify modification
 +
-diff -dw --unified=0 -r _distribution-2.2.2/sources/classes/post/class_post_reply.php irc-notify/sources/classes/post/class_post_reply.php
+diff -dw --unified=0 -x '\.DS_Store' -r _distribution-2.2.2/sources/classes/post/class_post_reply.php irc-notify/sources/classes/post/class_post_reply.php
 --- _distribution-2.2.2/sources/classes/post/class_post_reply.php	2006-10-11 09:55:48.000000000 +0200
-+++ irc-notify/sources/classes/post/class_post_reply.php	2007-03-01 15:00:38.000000000 +0100
++++ irc-notify/sources/classes/post/class_post_reply.php	2007-03-06 17:22:46.000000000 +0100
 @@ -447,0 +448,23 @@
 +		// Begin MediaWiki-compatible MYSTcommunity IRC notify modification
 +
@@ -40,12 +40,12 @@ diff -dw --unified=0 -r _distribution-2.2.2/sources/classes/post/class_post_repl
 +
 +		$IRCconn = socket_create( AF_INET, SOCK_DGRAM, SOL_UDP );
 +		if ( $IRCconn ) {
++			$IRCline = "MYSTcommunity New Reply: \00307".$this->topic['title']."\003 ".$this->ipsclass->vars['board_url']."/index.php?showtopic=".$this->topic['tid']."&view=findpost&p=".$this->post['pid']." \0035in\003 \00310".$this->forum['name']."\003 \0035by\003 ".$update_array['last_poster_name'];
++
 +			if ($update_array['last_poster_id']) {
-+				$IRCline = "MYSTcommunity New Reply: \00307".$this->topic['title']."\003 http://www.mystcommunity.com/board/index.php?showtopic=".$this->topic['tid']."&view=findpost&p=".$this->post['pid']." \0035in\003 \00310".$this->forum['name']."\003 \0035by\003 ".$update_array['last_poster_name']."[".$update_array['last_poster_id']."]";
++				$IRCline .= "[".$update_array['last_poster_id']."]";
 +			}
-+			else {
-+				$IRCline = "MYSTcommunity New Reply: \00307".$this->topic['title']."\003 http://www.mystcommunity.com/board/index.php?showtopic=".$this->topic['tid']."&view=findpost&p=".$this->post['pid']." \0035in\003 \00310".$this->forum['name']."\003 \0035by\003 ".$update_array['last_poster_name'];
-+			}
++
 +			socket_sendto( $IRCconn, $IRCprefix.$IRCline, strlen($IRCprefix)+strlen($IRCline), 0, "mystchat.homeip.net", 51666 );
 +			socket_close( $IRCconn );
 +		}
