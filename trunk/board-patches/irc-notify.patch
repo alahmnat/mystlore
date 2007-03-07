@@ -1,6 +1,6 @@
 diff -dw --unified=0 -x '\.DS_Store' -r _distribution-2.2.2/sources/classes/post/class_post_new.php irc-notify/sources/classes/post/class_post_new.php
 --- _distribution-2.2.2/sources/classes/post/class_post_new.php	2006-10-25 15:16:34.000000000 +0200
-+++ irc-notify/sources/classes/post/class_post_new.php	2007-03-06 17:43:56.000000000 +0100
++++ irc-notify/sources/classes/post/class_post_new.php	2007-03-07 01:41:04.000000000 +0100
 @@ -343,0 +344,23 @@
 +		// Begin MediaWiki-compatible MYSTcommunity IRC notify modification
 +
@@ -27,14 +27,14 @@ diff -dw --unified=0 -x '\.DS_Store' -r _distribution-2.2.2/sources/classes/post
 +
 diff -dw --unified=0 -x '\.DS_Store' -r _distribution-2.2.2/sources/classes/post/class_post_reply.php irc-notify/sources/classes/post/class_post_reply.php
 --- _distribution-2.2.2/sources/classes/post/class_post_reply.php	2006-10-11 09:55:48.000000000 +0200
-+++ irc-notify/sources/classes/post/class_post_reply.php	2007-03-06 17:22:46.000000000 +0100
++++ irc-notify/sources/classes/post/class_post_reply.php	2007-03-07 01:47:07.000000000 +0100
 @@ -447,0 +448,23 @@
 +		// Begin MediaWiki-compatible MYSTcommunity IRC notify modification
 +
 +		// prefix with 'admin' if it's a private forum
 +		// MYSTbot will reroute the message to a different room
 +		$IRCprefix="";
-+		if ($this->forum['parent_id'] == 107 || $this->forum['parent_id'] == 44 || $this->forum['parent_id'] == 59 || $this->topic['approved'] == 0) {
++		if ($this->forum['parent_id'] == 107 || $this->forum['parent_id'] == 44 || $this->forum['parent_id'] == 59 || $this->topic['moderate'] == 1 || $this->topic['moderate'] == 3) {
 +			$IRCprefix="admin";
 +		}
 +
