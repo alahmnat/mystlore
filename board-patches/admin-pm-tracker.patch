@@ -1,0 +1,167 @@
+diff -dw --unified=0 -x '\.DS_Store' -r _distribution-2.2.2/sources/action_public/messenger.php admin-pm-tracker/sources/action_public/messenger.php
+--- _distribution-2.2.2/sources/action_public/messenger.php	2007-02-08 14:55:24.000000000 +0100
++++ admin-pm-tracker/sources/action_public/messenger.php	2007-03-20 19:28:38.000000000 +0100
+@@ -1614,0 +1615,62 @@
++		// Begin MYSTcommunity admin PM tracking
++
++		// Declare a system setting in the IPB AdminCP like this:
++
++		// Tools & Settings -> System Settings -> Personal Message Set-up
++		// Add New Setting
++		// title: "Admin-tracked PM member IDs"
++		// description: "Line-break-separated list of IDs of members whose incoming and outgoing PMs are to be tracked by admins."
++		// group: "Personal Message Set-up"
++		// type: Textarea
++		// key: "pmAdminTrackIDs"
++
++		// (Strictly speaking, only the type and key really matter; the rest just helps you find it.)
++		// Now, set the value of this to a linebreak-separated list of member IDs, like this:
++
++		// 1234
++		// 483
++		// 193
++
++		// It does not need to be sorted. Any members with this ID will have their incoming *and* outgoing messages duplicated in a thread.
++
++		// Second, create a thread that tracked messages will appear in as replies. Remember its ID. *NB: It is up to you to ensure this thread is in a private (typically, admin-only) forum, i.e. inaccessible by non-members.*
++
++		// Create another system setting:
++
++		// title: ID of thread containing tracked PMs
++		// group: "Personal Message Set-up"
++		// type: Text Input
++		// key: "pmAdminTrackThreadID"
++
++		// Now input the ID of the thread you've just created.
++
++		// Finally, all you have to do is update your "Admin-tracked PM member IDs" list when it makes sense. The PMs will come up as replies in the thread, as if they were normal posts, with the sender as the poster (even though the sender is probably not able to actually post in this thread).
++
++		$pmAdminTrackIDs = preg_split('/[\n\r]+/', $this->ipsclass->vars['pmAdminTrackIDs']); // no, explode() will /not/ do
++
++		foreach ($pmAdminTrackIDs as $key=>$value) {
++			if (! is_numeric($value)) {
++				unset($pmAdminTrackIDs[$key]);
++			}
++		}
++
++		$fromMemberID = $this->ipsclass->member['id'];
++
++		if (is_numeric($this->ipsclass->input['from_contact'])) {
++			// take member ID from friends list popup menu selection
++			$toMemberID	= intval($this->ipsclass->input['from_contact']);
++			// get name for it
++			$toMemberName = strval(trim(implode('', $this->ipsclass->DB->simple_exec_query( array('select' => 'name', 'from' => 'members', 'where' => 'id="' . $toMemberID . '"')))));
++		} else {
++			// take member name from text field
++			$toMemberName = strval($this->ipsclass->input['entered_name']);
++			// get ID for it
++			$toMemberID	= intval(trim(implode('', $this->ipsclass->DB->simple_exec_query( array('select' => 'id', 'from' => 'members', 'where' => 'name="' . $toMemberName . '"')))));
++		}
++
++		if ((array_search($fromMemberID, $pmAdminTrackIDs) !== false) || (array_search($toMemberID, $pmAdminTrackIDs) !== false)) {
++			$shouldAdminTrackPM = true;
++		}
++
++		// End MYSTcommunity admin PM tracking
++
+@@ -1648,0 +1711,100 @@
++		// Begin MYSTcommunity admin PM tracking
++
++		if ($shouldAdminTrackPM) {
++			//copy of relevant parts from class_post_reply#save_post()
++
++			$pmAdminTrackThreadID = intval($this->ipsclass->vars['pmAdminTrackThreadID']);
++			$pmAdminTrackForumID = intval(trim(implode('', $this->ipsclass->DB->simple_exec_query( array('select' => 'forum_id', 'from' => 'topics', 'where' => 'tid="' . $pmAdminTrackThreadID . '"')))));
++
++			$this->ipsclass->DB->simple_construct( array( 'select' => '*', 'from' => 'topics', 'where' => "forum_id={$pmAdminTrackForumID} AND tid={$pmAdminTrackThreadID}" ) );
++			$this->ipsclass->DB->simple_exec();
++			$this->topic = $this->ipsclass->DB->fetch_row();
++
++			$this->ipsclass->DB->simple_construct( array( 'select' => '*', 'from' => 'forums', 'where' => "id={$pmAdminTrackForumID}" ) );
++			$this->ipsclass->DB->simple_exec();
++			$this->forum = $this->ipsclass->DB->fetch_row();
++
++			require_once( ROOT_PATH."sources/handlers/han_parse_bbcode.php" );
++			$this->parser	=  new parse_bbcode();
++			$this->parser->ipsclass	=& $this->ipsclass;
++			$this->parser->allow_update_caches = 1;
++
++			$this->parser->bypass_badwords = true;
++
++			$this->post = array(
++				'author_id'   => $this->ipsclass->member['id'] ? $this->ipsclass->member['id'] : 0,
++				'use_sig'     => false,
++				'use_emo'     => false,
++				'ip_address'  => $this->ipsclass->ip_address,
++				'post_date'   => time(),
++				'icon_id'     => 0,
++				'post'        => $this->parser->pre_db_parse("[size=4]PM Tracker[/size]
++
++[b]Subject:[/b] {$this->ipsclass->input['msg_title']}
++[b]To:[/b] {$toMemberName}
++
++".$this->ipsclass->input['Post']),
++				'author_name' => $this->ipsclass->member['id'] ? $this->ipsclass->member['members_display_name'] : $this->ipsclass->input['UserName'],
++				'topic_id'    => $pmAdminTrackThreadID,
++				'queued'      => false,
++				'post_htmlstate' => false,
++			);
++
++			$this->post['post_key']    = 0;
++			$this->post['post_parent'] = 0;
++
++			$this->ipsclass->DB->force_data_type = array( 'pid'  => 'int',
++														  'post' => 'string' );
++
++			$this->ipsclass->DB->do_insert( 'posts', $this->post );
++
++			$this->post['pid'] = $this->ipsclass->DB->get_insert_id();
++
++			require_once( ROOT_PATH."sources/classes/post/class_post.php" );
++
++			//-----------------------------------------
++			// Add to forum's last post?
++			//-----------------------------------------
++
++			$dbs = array( 'last_title'       => $this->topic['title'],
++						  'last_id'          => $pmAdminTrackThreadID,
++						  'last_post'        => time(),
++						  'last_poster_name' => $this->ipsclass->member['id'] ?  $this->ipsclass->member['members_display_name'] : $this->ipsclass->input['UserName'],
++						  'last_poster_id'   => $this->ipsclass->member['id'],
++					   );
++
++			$this->ipsclass->cache['stats']['total_replies']++;
++
++			$this->forum['posts'] = intval($this->forum['posts']);
++			$dbs['posts']         = ++$this->forum['posts'];
++
++			//-----------------------------------------
++			// Update
++			//-----------------------------------------
++
++			$this->ipsclass->DB->do_update( 'forums', $dbs, "id={$pmAdminTrackForumID}" );
++
++			//-----------------------------------------
++			// Update forum cache
++			//-----------------------------------------
++
++			$this->ipsclass->update_forum_cache();
++
++			$this->ipsclass->update_cache( array( 'name' => 'stats', 'array' => 1, 'deletefirst' => 0, 'donow' => 1 ) );
++
++			$update_array['last_poster_id']   = $this->ipsclass->member['id'];
++			$update_array['last_poster_name'] = $this->ipsclass->member['id'] ?  $this->ipsclass->member['members_display_name'] : $this->ipsclass->input['UserName'];
++			$update_array['last_post']        = time();
++			$update_array['pinned']           = 0;
++			$update_array['state']            = 'open';
++
++			$this->ipsclass->DB->force_data_type = array( 'title'            => 'string',
++				'description'      => 'string',
++				'starter_name'     => 'string',
++				'last_poster_name' => 'string' );
++
++			$this->ipsclass->DB->do_update( 'topics', $update_array, "tid={$pmAdminTrackThreadID}"  );
++		}
++
++		// End MYSTcommunity admin PM tracking
++
