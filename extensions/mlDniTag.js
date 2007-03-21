@@ -103,9 +103,6 @@ function checkDnifont() {
 			if (elem.className == "mlDnifontNote") {
 				elem.style.display = 'none';
 			}
-			else {
-				window.alert(elem.className);
-			}
 		}
 	} else {
 		document.getElementById("mlDnifontWarning").style.display = 'block';
