@@ -25,7 +25,7 @@ function mlDniTagScripting(&$out, &$text) {
 	$extensionsDirectory = "$wgScriptPath/extensions";
 
 	// with BeforePageDisplay, we could properly place the script tag in the head instead of the body
-	$text = "\n		".'<script type="text/javascript" src="'.$extensionsDirectory.'/mlDniTag.js"></script>'."\n".'<div id="mlDnifontWarning" class="mlRed-block" style="display: none;"><strong>Note:</strong> This page contains text written in <a href="/wiki/D%27ni_script">'."D'ni</a>. To be view it properly, you need to have the D'ni script font installed on your computer, and it appears you don't. ".'<a href="/wiki/MYSTlore:D%27ni_text_input"><em>Click here for more information.</em></a></div>'."\n\n".$text."\n\n".'<script type="text/javascript">checkDnifont();</script>';
+	$text = "\n		".'<script type="text/javascript" src="'.$extensionsDirectory.'/mlDniTag.js"></script>'."\n".'<div id="mlDnifontWarning" class="mlRed-block" style="display: none;"><strong>Note:</strong> This page contains text written in <a href="/wiki/D%27ni_script">'."D'ni</a>. To be view it properly, you need to have the D'ni script font installed on your computer, and it appears you don't. ".'<a href="/wiki/MYSTlore:D%27ni_text_input"><em>Click here for more information.</em></a></div>'."\n\n".$text."\n".'<script type="text/javascript">if (performDnifontCheck) {checkDnifont();}</script>'."\n\n";
 }
 
 function mlDniTag() {
@@ -36,6 +36,6 @@ function mlDniTag() {
 }
 
 function renderDniScript($input, $argv, &$parser) {
-	return "<span style=\"font: 14pt Dnifont; padding: 0 5px 0 5px;\">$input</span><sup class=\"mlDnifontNote\">&#91;<a href=\"http://www.mystlore.com/wiki/MYSTlore:D%27ni_text_input\">?</a>&#93;</sup>";
+	return '<script type="text/javascript">performDnifontCheck = true;</script><span style="font: 14pt Dnifont; padding: 0 5px 0 5px;">'.$input.'</span><sup class="mlDnifontNote">&#91;<a href="http://www.mystlore.com/wiki/MYSTlore:D%27ni_text_input">?</a>&#93;</sup>';
 }
 ?>
