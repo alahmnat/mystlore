@@ -21,6 +21,13 @@
 $wgHooks['ParserBeforeInternalParse'][] = "mlNoCategoryWarning"; // BeforePageDisplay not supported by MediaWiki 1.6.x
 
 function mlNoCategoryWarning(&$parser, &$text) {
+	global $action;
+
+	// only act for view-like actions
+	if (($action != 'view') && ($action != 'purge')) {
+		return true;
+	}
+
 	$title =& $parser->getTitle();
 
 	// only act on main (article) namespace
