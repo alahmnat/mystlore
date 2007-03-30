@@ -26,6 +26,7 @@ function mlDniTagScripting(&$out, &$text) {
 
 	// with BeforePageDisplay, we could properly place the script tag in the head instead of the body
 	$text = "\n		".'<script type="text/javascript" src="'.$extensionsDirectory.'/mlDniTag.js"></script>'."\n".'<div id="mlDnifontWarning" class="mlRed-block" style="display: none;"><strong>Note:</strong> This page contains text written in <a href="/wiki/D%27ni_script">'."D'ni</a>. To be view it properly, you need to have the D'ni script font installed on your computer, and it appears you don't. ".'<a href="/wiki/MYSTlore:D%27ni_text_input"><em>Click here for more information.</em></a></div>'."\n\n".$text."\n".'<script type="text/javascript">if (performDnifontCheck) {checkDnifont();}</script>'."\n\n";
+	return true;
 }
 
 function mlDniTag() {

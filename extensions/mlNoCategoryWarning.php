@@ -21,7 +21,7 @@
 $wgHooks['ParserBeforeInternalParse'][] = "mlNoCategoryWarning"; // BeforePageDisplay not supported by MediaWiki 1.6.x
 
 function mlNoCategoryWarning(&$parser, &$text) {
-	global $action;
+	global $action, $wgParser;
 
 	// only act for view-like actions
 	if (($action != 'view') && ($action != 'purge')) {
@@ -41,7 +41,13 @@ function mlNoCategoryWarning(&$parser, &$text) {
 
 	// TODO: doesn't actually add article to category (possible at all?)
 	if (count($matches) == 0) {
-		$text .= "\n".'<div class="mlRed-block"><strong>Note:</strong> This page has no categories. [[Editor]]s, please try to add suitable [[Special:Categories|existing]] or new categories to it.'."\n[[Category:Uncategorized Pages]]\n\n";
+		// important if the page only has categories through templates within
+		$textAfterTemplateParsing = $wgParser->replaceVariables($text, null, false);
+		preg_match('/\[\[Category:.*\]\]/', $textAfterTemplateParsing, &$templateMatches);
+
+		if (count($templateMatches) == 0) {
+			$text .= "\n".'<div class="mlRed-block"><strong>Note:</strong> This page has no categories. [[Editor]]s, please try to add suitable [[Special:Categories|existing]] or new categories to it.'."\n[[Category:Uncategorized Pages]]\n\n";
+		}
 	}
 
 	return true;
