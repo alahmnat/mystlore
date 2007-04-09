@@ -1,0 +1,43 @@
+--- _distribution-2.2.2/sources/action_public/register.php	2007-02-02 17:49:20.000000000 +0100
++++ ntt-antispam/sources/action_public/register.php	2007-03-27 15:13:39.000000000 +0200
+@@ -1322,2 +1322,2 @@
+-		if ($this->ipsclass->vars['bot_antispam'])
+-		{
++		if ((! isset($this->ipsclass->vars['nttOriginalText'])) &&
++		($this->ipsclass->vars['bot_antispam'])) {
+@@ -1450 +1450,5 @@
+-    	if ($this->ipsclass->vars['bot_antispam'] == 'gd')
++		if (isset($this->ipsclass->vars['nttOriginalText'])) {
++			$this->output = str_replace("<!--{REG.ANTISPAM}-->", $this->ipsclass->compiled_templates['skin_register']->bot_antispam_ntt($this->ipsclass->vars['nttInstructions'], $this->ipsclass->vars['nttOriginalText']), $this->output);
++		}
++
++    	else if ($this->ipsclass->vars['bot_antispam'] == 'gd')
+@@ -2055 +2059,27 @@
+-		if ($this->ipsclass->vars['bot_antispam'])
++		if (isset($this->ipsclass->vars['nttOriginalText'])) {
++			$nttOriginal = $this->ipsclass->vars['nttOriginalText'];
++			$nttInput = html_entity_decode($this->ipsclass->input['reg_code'], ENT_QUOTES); // decode potential HTML quote entities from the form
++			$nttExpected = substr_replace($this->ipsclass->vars['nttOriginalText'], $this->ipsclass->vars['nttParameterString'], $this->ipsclass->vars['nttRangeIndex'], $this->ipsclass->vars['nttRangeLength']);
++
++			if (strcmp($nttInput, $nttOriginal) == 0) {
++				$form_errors['general'][] = "Please follow the directions in the Anti-spam Challenge section.";
++			} else {
++				switch (intval($nttCaseSensitiveComparison)) {
++					case 1:
++						if (strcmp($nttInput, $nttExpected) != 0) {
++							$form_errors['general'][] = "Please follow the directions in the Anti-spam Challenge section more carefully. Make sure letter case is correct, too.";
++						}
++						break;
++
++					case 0:
++					default:
++						if (strcasecmp($nttInput, $nttExpected) != 0) {
++							$form_errors['general'][] = "Please follow the directions in the Anti-spam Challenge section more carefully.";
++						}
++						break;
++				}
++
++			}
++		}
++
++		else if ($this->ipsclass->vars['bot_antispam'])
