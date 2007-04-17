@@ -53,7 +53,6 @@ function mlGZAddCoordinate(&$editedArticle) {
 			$line = explode('|', $value);
 
 			if (strcmp($line[0], $editedTitle->getText()) == 0) {
-				fwrite($testfile, "Found ".$line[0]." == ".$editedTitle->getText()." at key ".$key);
 				unset($contentArray[$key]);
 			}
 
@@ -63,7 +62,7 @@ function mlGZAddCoordinate(&$editedArticle) {
 		$coords = explode('|', $templateMatches[0]);
 		$addedBit .= "\n".$editedTitle->getText().'|'.intval($coords[1]).'|'.intval($coords[2]).'|'.intval($coords[3]);
 
-		$gzCoordListPageArticle->doEdit($commentLine.$addedBit, '', EDIT_UPDATE);
+		$gzCoordListPageArticle->doEdit($commentLine.$addedBit, '[mlGZCoordinates automated addition of Great Zero coordinate]', EDIT_UPDATE);
 	}
 
 	return true;
@@ -223,7 +222,12 @@ EOT;
 		// 	)
 		// );
 
-		foreach ($coords as $value) {
+		foreach ($coords as $key=>$value) {
+			if ($inputCoord->isEquivalentTo($value)) {
+				unset($coords[$key]);
+				continue;
+			}
+
 //			$resultString .= "*".$value->location.$inputCoord->distance_from($value);
 //		}
 
@@ -234,7 +238,7 @@ EOT;
 
 //			$compareCoord = new GreatZeroCoordinate($value['angle'], $value['distance'], $value['elevation']);
 
-			$resultString .= "*'''[[".$value->location."]]''', at {{gz-coord|".$value->angle.'|'.$value->distance.'|'.$value->elevation."}}; ".$inputCoord->distance_from($compareCoord)." spantee away\n";
+			$resultString .= "*'''[[".$value->location."]]''', at {{gz-coord|".$value->angle.'|'.$value->distance.'|'.$value->elevation."}}; ".$inputCoord->distance_from($value)." spantee away\n";
 		}
 
 		if (strcmp($resultString, '') != 0) {
@@ -255,7 +259,6 @@ EOT
 		$gzCoordListPageContent =& $gzCoordListPageArticle->getContent();
 
 		$contentArray = preg_split('/[\n\r]+/', $gzCoordListPageContent);
-		global $wgOut;
 
 		unset($contentArray[0]);
 		unset($contentArray[1]);
@@ -273,8 +276,6 @@ EOT
 	}
 
 	private function findNearbyLocations() {
-		global $wgOut;
-
 		$coords = $this->retrieveListOfLocations();
 
 		// not unit-safe yet
@@ -299,8 +300,10 @@ class GreatZeroCoordinate {
 	public $y;
 	public $z;
 	
-	function __construct($a_location, $a_distance, $a_angle, $a_elevation) {
-		global $wgOut;
+	function __construct($a_location, $a_angle, $a_distance, $a_elevation) {
+//		global $wgOut;
+
+//		$wgOut->addWikiText("DEBUG: New GreatZeroCoordinate object with L ".$a_location." A ".$a_angle." D ".$a_distance." E ".$a_elevation);
 
 		$angle = $a_angle * pi() / 62500;
 
@@ -315,6 +318,15 @@ class GreatZeroCoordinate {
 	
 	function distance_from($a_other) {
 		return sqrt(pow($this->x - $a_other->x, 2) + pow($this->y - $a_other->y, 2) + pow($this->z - $a_other->z, 2));
+	}
+
+	function isEquivalentTo($a_other) {
+		global $wgOut;
+		if (($this->angle == $a_other->angle) && ($this->distance == $a_other->distance) && ($this->elevation == $a_other->elevation)) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 }
 ?>
