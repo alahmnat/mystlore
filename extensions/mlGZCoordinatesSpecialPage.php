@@ -33,6 +33,9 @@ function mlGZCoordinatesSpecialPageLoader() {
 
 function mlGZAddCoordinate(&$editedArticle) {
 	$editedTitle =& $editedArticle->getTitle();
+	if ($editedTitle->getNamespace() != NS_MAIN) {
+		return true;
+	}
 
 	if (preg_match('/{{gz-coord.*}}/', $editedArticle->getContent(), $templateMatches)) { // only update if the article has such a template
 		$gzCoordListPageTitle = Title::newFromURL('List of known GZ coordinates');
@@ -124,6 +127,21 @@ class GZCoordinatesSpecialPage extends SpecialPage {
 
 		$form .= <<<EOT
 <script type="text/javascript">
+function roundValues() {
+	var spanElements = document.getElementsByTagName("span");
+	var i, len = spanElements.length;
+
+	for (i = 0; i < len; i++) {
+		var elem = spanElements[i];
+		if ((elem.className == "angleValue") ||
+		(elem.className == "distanceValue") ||
+		(elem.className == "elevationValue") ||
+		(elem.className == "distanceFromValue")) {
+			elem.innerHTML = Math.round(elem.innerHTML*100)/100;
+		}
+	}
+}
+
 function changeAngleUnit() {
 	angleUnitTDConversionFactor = 62500/360; // 62500 torantee ^= 360 degrees
 
@@ -155,6 +173,8 @@ function changeAngleUnit() {
 
 			break;
 	}
+
+	roundValues(); // re-round values after changing them
 }
 
 // function changeDistanceUnit() {
@@ -238,7 +258,7 @@ EOT;
 
 //			$compareCoord = new GreatZeroCoordinate($value['angle'], $value['distance'], $value['elevation']);
 
-			$resultString .= "*'''[[".$value->location."]]''', at {{gz-coord|".$value->angle.'|'.$value->distance.'|'.$value->elevation."}}; ".$inputCoord->distance_from($value)." spantee away\n";
+			$resultString .= "*'''[[".$value->location."]]''', at {{gz-coord|".$value->angle.'|'.$value->distance.'|'.$value->elevation."}}; <span class='distanceFromValue'>".$inputCoord->distance_from($value)."</span> spantee away\n";
 		}
 
 		if (strcmp($resultString, '') != 0) {
@@ -248,6 +268,8 @@ The following locations are in proximity of your given coordinates [[Image:KI an
 
 EOT
 .$resultString);
+
+		$wgOut->addHtml('<script type="text/javascript">roundValues();</script>');
 		}
 	}
 
