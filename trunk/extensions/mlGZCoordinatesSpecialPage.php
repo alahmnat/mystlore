@@ -107,7 +107,9 @@ class GZCoordinatesSpecialPage extends SpecialPage {
 		$form  = '<fieldset><legend>' . "Search for nearby locations" . '</legend>';
 		$form .= Xml::openElement( 'form', array( 'method' => 'get', 'action' => $wgScript ) );
 		$form .= Xml::hidden( 'title', $title->getPrefixedText() );
-		$form .= '<p>' . Xml::inputLabel("Angle:", 'angle', 'angle', 10, $this->angle) . '&nbsp;';
+		$form .= '<p>';
+		$form .= $wgOut->parse('[[Image:KI_angle_icon.png]]', false);
+		$form .= '&nbsp;' . Xml::inputLabel("Angle:", 'angle', 'angle', 10, $this->angle) . '&nbsp;';
 
 		$form .= Xml::openElement('select', array('name' => "angleUnit", 'id' => "angleUnit", 'onchange' => "changeAngleUnit();"));
 		if (strcmp($this->angleUnit, "degrees") == 0) {
@@ -119,8 +121,10 @@ class GZCoordinatesSpecialPage extends SpecialPage {
 		}
 		$form .= Xml::closeElement('select') . '<span style="padding-right: 2em;">&nbsp;</span>';
 
-		$form .= Xml::inputLabel("Distance:", 'distance', 'distance', 10, $this->distance) . '<span style="padding-right: 2em;">&nbsp;spantee&nbsp;</span>';
-		$form .= Xml::inputLabel("Elevation:", 'elevation', 'elevation', 10, $this->elevation) . '<span style="padding-right: 2em;">&nbsp;spantee&nbsp;</span>';
+		$form .= $wgOut->parse('[[Image:KI_distance_icon.png]]', false);
+		$form .= '&nbsp;' . Xml::inputLabel("Distance:", 'distance', 'distance', 10, $this->distance) . '<span style="padding-right: 2em;">&nbsp;spantee&nbsp;</span>';
+		$form .= $wgOut->parse('[[Image:KI_elevation_icon.png]]', false);
+		$form .= '&nbsp;' . Xml::inputLabel("Elevation:", 'elevation', 'elevation', 10, $this->elevation) . '<span style="padding-right: 2em;">&nbsp;spantee&nbsp;</span>';
 		$form .= Xml::submitButton( "Go" ) . '</p>';
 		$form .= Xml::closeElement( 'form' );
 		$form .= '</fieldset>';
