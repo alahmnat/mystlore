@@ -305,7 +305,7 @@ class GreatZeroCoordinate {
 
 //		$wgOut->addWikiText("DEBUG: New GreatZeroCoordinate object with L ".$a_location." A ".$a_angle." D ".$a_distance." E ".$a_elevation);
 
-		$angle = $a_angle * pi() / 62500;
+		$angle = $a_angle * 2 * pi() / 62500;
 
 		$this->location = $a_location;
 		$this->angle = $a_angle;
