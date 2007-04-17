@@ -19,6 +19,7 @@
 */
 
 $wgExtensionFunctions[] = "mlGZCoordinatesSpecialPageLoader";
+$wgHooks['ArticleSaveComplete'][] = "mlGZAddCoordinate";
 
 require_once( "$IP/includes/SpecialPage.php" );
 
@@ -28,6 +29,44 @@ function mlGZCoordinatesSpecialPageLoader() {
 	$wgMessageCache->addMessages(array('gzcoordinatesspecialpage' => 'Great Zero Coordinates'));
 	
 	SpecialPage::addPage( new GZCoordinatesSpecialPage() );
+}
+
+function mlGZAddCoordinate(&$editedArticle) {
+	$editedTitle =& $editedArticle->getTitle();
+
+	if (preg_match('/{{gz-coord.*}}/', $editedArticle->getContent(), $templateMatches)) { // only update if the article has such a template
+		$gzCoordListPageTitle = Title::newFromURL('List of known GZ coordinates');
+		$gzCoordListPageTitle->invalidateCache();
+
+		$gzCoordListPageArticle = new Article($gzCoordListPageTitle);
+		$gzCoordListPageContent =& $gzCoordListPageArticle->getContent();
+
+		$contentArray = preg_split('/[\n\r]+/', $gzCoordListPageContent);
+
+		$commentLine = $contentArray[0];
+
+		unset($contentArray[0]);
+
+		$addedBit = '';
+		
+		foreach ($contentArray as $key=>$value) { // ensure only one line per article
+			$line = explode('|', $value);
+
+			if (strcmp($line[0], $editedTitle->getText()) == 0) {
+				fwrite($testfile, "Found ".$line[0]." == ".$editedTitle->getText()." at key ".$key);
+				unset($contentArray[$key]);
+			}
+
+			$addedBit .= "\n".$contentArray[$key];
+		}
+
+		$coords = explode('|', $templateMatches[0]);
+		$addedBit .= "\n".$editedTitle->getText().'|'.intval($coords[1]).'|'.intval($coords[2]).'|'.intval($coords[3]);
+
+		$gzCoordListPageArticle->doEdit($commentLine.$addedBit, '', EDIT_UPDATE);
+	}
+
+	return true;
 }
 
 class GZCoordinatesSpecialPage extends SpecialPage {
@@ -48,7 +87,6 @@ class GZCoordinatesSpecialPage extends SpecialPage {
 
 		$this->angleUnit = $wgRequest->getText('angleUnit');
 
-		$wgOut->addWikiText("This is some ''lovely'' [[wikitext]] that will '''get''' parsed nicely.");
 		$wgOut->addHtml( $this->makeForm() );
 
 		if ((strlen($this->angle) > 0) && (strlen($this->distance) > 0) && (strlen($this->elevation) > 0)) {
@@ -67,7 +105,7 @@ class GZCoordinatesSpecialPage extends SpecialPage {
 		$form  = '<fieldset><legend>' . "Search for nearby locations" . '</legend>';
 		$form .= Xml::openElement( 'form', array( 'method' => 'get', 'action' => $wgScript ) );
 		$form .= Xml::hidden( 'title', $title->getPrefixedText() );
-		$form .= '<p>' . Xml::inputLabel("Angle:", 'angle', 'angle', 10, $this->angle);
+		$form .= '<p>' . Xml::inputLabel("Angle:", 'angle', 'angle', 10, $this->angle) . '&nbsp;';
 
 		$form .= Xml::openElement('select', array('name' => "angleUnit", 'id' => "angleUnit", 'onchange' => "changeAngleUnit();"));
 		if (strcmp($this->angleUnit, "degrees") == 0) {
@@ -79,8 +117,8 @@ class GZCoordinatesSpecialPage extends SpecialPage {
 		}
 		$form .= Xml::closeElement('select') . '<span style="padding-right: 2em;">&nbsp;</span>';
 
-		$form .= Xml::inputLabel("Distance:", 'distance', 'distance', 10, $this->distance) . '<span style="padding-right: 2em;">&nbsp;</span>';
-		$form .= Xml::inputLabel("Elevation:", 'elevation', 'elevation', 10, $this->elevation) . '<span style="padding-right: 2em;">&nbsp;</span>';
+		$form .= Xml::inputLabel("Distance:", 'distance', 'distance', 10, $this->distance) . '<span style="padding-right: 2em;">&nbsp;spantee&nbsp;</span>';
+		$form .= Xml::inputLabel("Elevation:", 'elevation', 'elevation', 10, $this->elevation) . '<span style="padding-right: 2em;">&nbsp;spantee&nbsp;</span>';
 		$form .= Xml::submitButton( "Go" ) . '</p>';
 		$form .= Xml::closeElement( 'form' );
 		$form .= '</fieldset>';
@@ -88,89 +126,161 @@ class GZCoordinatesSpecialPage extends SpecialPage {
 		$form .= <<<EOT
 <script type="text/javascript">
 function changeAngleUnit() {
-	angleUnitConversionFactor = 62500/360;
+	angleUnitTDConversionFactor = 62500/360; // 62500 torantee ^= 360 degrees
 
 	var spanElements = document.getElementsByTagName("span");
 	var i, len = spanElements.length;
 
 	switch (document.getElementById('angleUnit').selectedIndex) {
 		case 0: // degrees to torantee
-			document.getElementById('angle').value *= angleUnitConversionFactor;
+			document.getElementById('angle').value *= angleUnitTDConversionFactor;
 
 			for (i = 0; i < len; i++) {
 				var elem = spanElements[i];
 				if (elem.className == "angleValue") {
-					elem.innerHTML *= angleUnitConversionFactor;
+					elem.innerHTML *= angleUnitTDConversionFactor;
 				}
 			}
 
 			break;
 
 		case 1: // torantee to degrees
-			document.getElementById('angle').value /= angleUnitConversionFactor;
+			document.getElementById('angle').value /= angleUnitTDConversionFactor;
 
 			for (i = 0; i < len; i++) {
 				var elem = spanElements[i];
 				if (elem.className == "angleValue") {
-					elem.innerHTML /= angleUnitConversionFactor;
+					elem.innerHTML /= angleUnitTDConversionFactor;
 				}
 			}
 
 			break;
 	}
 }
+
+// function changeDistanceUnit() {
+// 	angleUnitSFConversionFactor = 1/1.1234; // 1 span ^= 1.1234 feet
+// 	angleUnitSMConversionFactor = 1/1.23; // 1 span ^= 1.23 meters
+// 	angleUnitFMConversionFactor = 1/0.3048; // 1 foot ^= 0.3048 meters
+// 
+// 	var spanElements = document.getElementsByTagName("span");
+// 	var i, len = spanElements.length;
+// 
+// 	switch (document.getElementById('distanceUnit').selectedIndex) {
+// 		case 0: // degrees to torantee
+// 			document.getElementById('distance').value *= distanceUnitConversionFactor;
+// 
+// 			for (i = 0; i < len; i++) {
+// 				var elem = spanElements[i];
+// 				if (elem.className == "angleValue") {
+// 					elem.innerHTML *= angleUnitConversionFactor;
+// 				}
+// 			}
+// 
+// 			break;
+// 
+// 		case 1: // torantee to degrees
+// 			document.getElementById('angle').value /= angleUnitConversionFactor;
+// 
+// 			for (i = 0; i < len; i++) {
+// 				var elem = spanElements[i];
+// 				if (elem.className == "angleValue") {
+// 					elem.innerHTML /= angleUnitConversionFactor;
+// 				}
+// 			}
+// 
+// 			break;
+// 	}
+// }
 </script>
 EOT;
 
 		return $form;
 	}
 
-	private function compareLocation() {
+	private function compareLocation($inputCoord, $coords) {
 		global $wgOut;
 
 		if (strcmp($this->angleUnit, "degrees") == 0) {
 			$useDegrees = true;
 		}
 
-		$locations = array(
-			array(
-				'title' => "Tokotah Courtyard",
+		// $locations = array(
+		// 	array(
+		// 		'title' => "Tokotah Courtyard",
+		// 
+		// 		'angle' => 12,
+		// 		'distance' => 34,
+		// 		'elevation' => 56
+		// 	),
+		// 
+		// 	array(
+		// 		'title' => "Canyon Mall",
+		// 
+		// 		'angle' => 583,
+		// 		'distance' => 293,
+		// 		'elevation' => 5902
+		// 	)
+		// );
 
-				'angle' => 12,
-				'distance' => 34,
-				'elevation' => 56
-			),
+		foreach ($coords as $value) {
+//			$resultString .= "*".$value->location.$inputCoord->distance_from($value);
+//		}
 
-			array(
-				'title' => "Canyon Mall",
+		// foreach ($locations as $value) {
+		// 	if ($useDegrees) {
+		// 		$value['angle'] = $value['angle'] / (62500/360);
+		// 	}
 
-				'angle' => 583,
-				'distance' => 293,
-				'elevation' => 5902
-			)
-		);
+//			$compareCoord = new GreatZeroCoordinate($value['angle'], $value['distance'], $value['elevation']);
 
-		foreach ($locations as $value) {
-			if ($useDegrees) {
-				$value['angle'] = $value['angle'] / (62500/360);
-			}
-
-			$resultString .= "*'''[[".$value['title']."]]''', at [{{SERVER}}{{localurl:Special:GZCoordinatesSpecialPage|angle=".$value['angle']."&distance=".$value['distance']."&elevation=".$value['elevation']."&angleUnit=".$this->angleUnit." <span class='angleValue'>".$value['angle'].'</span>&deg; - '.$value['distance'].' - '.$value['elevation']."}}]\n";
+			$resultString .= "*'''[[".$value->location."]]''', at {{gz-coord|".$value->angle.'|'.$value->distance.'|'.$value->elevation."}}; ".$inputCoord->distance_from($compareCoord)." spantee away\n";
 		}
 
-		$wgOut->addWikiText($resultString);
+		if (strcmp($resultString, '') != 0) {
+			$wgOut->addWikiText(<<<EOT
+==Nearby locations==
+The following locations are in proximity of your given coordinates [[Image:KI angle icon.png]]&nbsp;'''<span class='angleValue'>$this->angle</span>&nbsp;&middot;&nbsp;[[Image:KI distance icon.png]]&nbsp;$this->distance&nbsp;&middot;&nbsp;[[Image:KI elevation icon.png]]&nbsp;$this->elevation''':
+
+EOT
+.$resultString);
+		}
+	}
+
+	private function retrieveListOfLocations() {
+		$gzCoordListPageTitle = Title::newFromURL('List of known GZ coordinates');
+		$gzCoordListPageTitle->invalidateCache();
+
+		$gzCoordListPageArticle = new Article($gzCoordListPageTitle);
+		$gzCoordListPageContent =& $gzCoordListPageArticle->getContent();
+
+		$contentArray = preg_split('/[\n\r]+/', $gzCoordListPageContent);
+		global $wgOut;
+
+		unset($contentArray[0]);
+		unset($contentArray[1]);
+		unset($contentArray[0]);
+
+		$coords = array();
+
+		foreach ($contentArray as $key=>$value) {
+			$line = explode('|', $value);
+
+			$coords[] = new GreatZeroCoordinate(strval($line[0]), intval($line[1]), intval($line[2]), intval($line[3]));
+		}
+
+		return $coords;
 	}
 
 	private function findNearbyLocations() {
 		global $wgOut;
 
-		$wgOut->addWikiText("==Nearby locations==");
-		$wgOut->addWikiText("The following locations are in proximity of your given coordinates '''<span class='angleValue'>".$this->angle."</span>&deg; - ".$this->distance." - ".$this->elevation."''':");
-		$wgOut->addWikiText("*The garden
-*The living room
-*The neighbor's house");
+		$coords = $this->retrieveListOfLocations();
 
-		$this->compareLocation();
+		// not unit-safe yet
+		$inputCoord = new GreatZeroCoordinate('', $this->angle, $this->distance, $this->elevation);
+
+		$this->compareLocation($inputCoord, $coords);
 	}
 
 	private function showAllLocations() {
@@ -180,4 +290,31 @@ EOT;
 	}
 }
 
+class GreatZeroCoordinate {
+	public $location;
+	public $angle;
+	public $distance;
+	public $elevation;
+	public $x;
+	public $y;
+	public $z;
+	
+	function __construct($a_location, $a_distance, $a_angle, $a_elevation) {
+		global $wgOut;
+
+		$angle = $a_angle * pi() / 62500;
+
+		$this->location = $a_location;
+		$this->angle = $a_angle;
+		$this->distance = $a_distance;
+		$this->elevation = $a_elevation;
+		$this->x = cos($angle) * $a_distance;
+		$this->y = sin($angle) * $a_distance;
+		$this->z = $a_elevation;
+	}
+	
+	function distance_from($a_other) {
+		return sqrt(pow($this->x - $a_other->x, 2) + pow($this->y - $a_other->y, 2) + pow($this->z - $a_other->z, 2));
+	}
+}
 ?>
