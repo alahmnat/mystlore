@@ -25,9 +25,7 @@ require_once( "$IP/includes/SpecialPage.php" );
 
 function mlGZCoordinatesSpecialPageLoader() {
 	global $IP, $wgMessageCache;
-	
-	$wgMessageCache->addMessages(array('gzcoordinatesspecialpage' => 'Great Zero Coordinates'));
-	
+
 	SpecialPage::addPage( new GZCoordinatesSpecialPage() );
 }
 
@@ -74,6 +72,8 @@ function mlGZAddCoordinate(&$editedArticle) {
 class GZCoordinatesSpecialPage extends SpecialPage {
 	function GZCoordinatesSpecialPage() {
 		SpecialPage::SpecialPage('GZCoordinatesSpecialPage');
+
+		self::loadMessages();
 	}
 
 	function execute( $par ) {
@@ -102,49 +102,60 @@ class GZCoordinatesSpecialPage extends SpecialPage {
 		}
 	}
 
+	function loadMessages() {
+		static $messagesLoaded = false;
+		global $wgMessageCache, $wgRequest;
+		if ($messagesLoaded) return;
+		$messagesLoaded = true;
+
+		require(dirname(__FILE__) . '/mlGZCoordinatesSpecialPage.i18n.php' );
+
+		foreach ($mlGZCoordinatesMessages as $lang => $langMessages) {
+			$wgMessageCache->addMessages($langMessages, $lang);
+		}
+	}
+
 	private function getHumanUnit($unit, $value) {
 		global $wgOut;
-
-		// TODO: localization!
 
 		switch ($unit) {
 			case 'toran':
 				if ($value != 1) {
-					$result = 'torantee';
+					$result = 'tee';
 				}
-				else $result = $unit;
+				$result = wfMsg('mlGZ'.$unit.$result);
 
 				break;
 
 			case 'degree':
 				if ($value != 1) {
-					$result = 'degrees';
+					$result = 's';
 				}
-				else $result = $unit;
+				$result = wfMsg('mlGZ'.$unit.$result);
 
 				break;
 
 			case 'shahfee':
 				if ($value != 1) {
-					$result = 'shahfeetee';
+					$result = 'tee';
 				}
-				else $result = $unit;
+				$result = wfMsg('mlGZ'.$unit.$result);
 
 				break;
 
 			case 'foot':
 				if ($value != 1) {
-					$result = 'feet';
+					$result = wfMsg('mlGZ'.'feet');
 				}
-				else $result = $unit;
+				$result = wfMsg('mlGZ'.$unit);
 
 				break;
 
 			case 'meter':
 				if ($value != 1) {
-					$result = 'meters';
+						$result = 's';
 				}
-				else $result = $unit;
+				$result = wfMsg('mlGZ'.$unit.$result);
 
 				break;
 		}
@@ -156,13 +167,13 @@ class GZCoordinatesSpecialPage extends SpecialPage {
 	private function makeForm() {
 		global $wgScript, $wgOut;
 		$title = self::getTitleFor( 'GZCoordinatesSpecialPage' );
-		$form  = '<fieldset><legend>' . "Search for nearby locations" . '</legend>';
+		$form  = '<fieldset><legend>' . wfMsg('mlGZSearchForNearbyLocations') . '</legend>';
 		$form .= Xml::openElement( 'form', array( 'method' => 'get', 'action' => $wgScript ) );
 		$form .= Xml::hidden( 'title', $title->getPrefixedText() );
 		$form .= '<p>';
 
 		$form .= $wgOut->parse('[[Image:KI_angle_icon.png]]', false);
-		$form .= '&nbsp;' . Xml::inputLabel("Angle:", 'angle', 'angle', 10, $this->angle) . '&nbsp;';
+		$form .= '&nbsp;' . Xml::inputLabel(wfMsg('mlGZAngle'), 'angle', 'angle', 10, $this->angle) . '&nbsp;';
 		$form .= Xml::openElement('select', array('name' => "angleUnit", 'id' => "angleUnit", 'onchange' => "changeAngleUnit();"));
 		if (strcmp($this->angleUnit, "degrees") == 0) {
 			$form .= Xml::option($this->getHumanUnit("toran", 0));
@@ -174,7 +185,7 @@ class GZCoordinatesSpecialPage extends SpecialPage {
 		$form .= Xml::closeElement('select') . '<span style="padding-right: 2em;">&nbsp;</span>';
 
 		$form .= $wgOut->parse('[[Image:KI_distance_icon.png]]', false);
-		$form .= '&nbsp;' . Xml::inputLabel("Distance:", 'distance', 'distance', 10, $this->distance) . '&nbsp;';
+		$form .= '&nbsp;' . Xml::inputLabel(wfMsg('mlGZDistance'), 'distance', 'distance', 10, $this->distance) . '&nbsp;';
 		$form .= Xml::openElement('select', array('name' => "distanceUnit", 'id' => "distanceUnit", 'onchange' => "changeDistanceUnit();"));
 		switch ($this->distanceUnit) {
 			case 'feet':
@@ -198,7 +209,7 @@ class GZCoordinatesSpecialPage extends SpecialPage {
 		$form .= Xml::closeElement('select') . '<span style="padding-right: 2em;">&nbsp;</span>';
 
 		$form .= $wgOut->parse('[[Image:KI_elevation_icon.png]]', false);
-		$form .= '&nbsp;' . Xml::inputLabel("Elevation:", 'elevation', 'elevation', 10, $this->elevation) . '&nbsp;';
+		$form .= '&nbsp;' . Xml::inputLabel(wfMsg('mlGZElevation'), 'elevation', 'elevation', 10, $this->elevation) . '&nbsp;';
 		$form .= Xml::openElement('select', array('name' => "elevationUnit", 'id' => "elevationUnit", 'onchange' => "changeElevationUnit();"));
 		switch ($this->elevationUnit) {
 			case 'feet':
@@ -221,7 +232,7 @@ class GZCoordinatesSpecialPage extends SpecialPage {
 		}
 		$form .= Xml::closeElement('select') . '<span style="padding-right: 2em;">&nbsp;</span>';
 
-		$form .= Xml::submitButton( "Go" ) . '</p>';
+		$form .= Xml::submitButton(wfMsg('mlGZGoButton')) . '</p>';
 		$form .= Xml::closeElement( 'form' );
 		$form .= '</fieldset>';
 
@@ -251,10 +262,11 @@ class GZCoordinatesSpecialPage extends SpecialPage {
 		ksort($sortedCoords);
 
 		foreach($sortedCoords as $key=>$value) {
-			$resultString .= "*'''[[".$value->location."]]''', at {{gz-coord|".$value->angle.'|'.$value->distance.'|'.$value->elevation."}}; <span class='distanceFromValue'>".$key."</span> ".$this->getHumanUnit('shahfee', $key)." away\n";
+			$resultString .= "*'''[[".$value->location."]]''', ".wfMsg('mlGZat')." {{gz-coord|".$value->angle.'|'.$value->distance.'|'.$value->elevation."}}; <span class='distanceFromValue'>".$key."</span> ".$this->getHumanUnit('shahfee', $key)." ".wfMsg('mlGZaway')."\n";
 		}
 
 		if (strcmp($resultString, '') != 0) {
+			// TODO: localization
 			$wgOut->addWikiText(<<<EOT
 ==Nearby locations==
 The following locations are in proximity of your given coordinates [[Image:KI angle icon.png]]&nbsp;'''<span class='angleValue'>$this->angle</span>&nbsp;&middot;&nbsp;[[Image:KI distance icon.png]]&nbsp;$this->distance&nbsp;&middot;&nbsp;[[Image:KI elevation icon.png]]&nbsp;$this->elevation''', with the closest first:
@@ -267,7 +279,8 @@ EOT
 	}
 
 	private function retrieveListOfLocations() {
-		$gzCoordListPageTitle = Title::newFromURL('List of known GZ coordinates');
+		// FIXME: URL isn't properly localized for some reason
+		$gzCoordListPageTitle = Title::newFromText(wfMsg('mlGZCoordinateListPage'));
 		$gzCoordListPageTitle->invalidateCache();
 
 		$gzCoordListPageArticle = new Article($gzCoordListPageTitle);
