@@ -36,11 +36,36 @@ function mlGZAddCoordinate(&$editedArticle) {
 	}
 
 	if (preg_match('/{{gz-coord.*}}/', $editedArticle->getContent(), $templateMatches)) { // only update if the article has such a template
-		$gzCoordListPageTitle = Title::newFromURL('List of known GZ coordinates');
+		$gzCoordListPageTitle = Title::newFromText(wfMsg('mlGZCoordinateListPage'));
 		$gzCoordListPageTitle->invalidateCache();
 
 		$gzCoordListPageArticle = new Article($gzCoordListPageTitle);
 		$gzCoordListPageContent =& $gzCoordListPageArticle->getContent();
+
+		# FIXME: this is from Title.php#newFromRedirect. There should be a better way of 'following a redirect only if needed'.
+		$mwRedir = MagicWord::get('redirect');
+		$rt = NULL;
+		if ($mwRedir->matchStart($gzCoordListPageContent)) {
+			$m = array();
+			if (preg_match('/\[{2}(.*?)(?:\||\]{2})/', $gzCoordListPageContent, $m)) {
+				if (substr($m[1],0,1) == ':') {
+					$m[1] = substr( $m[1], 1 );
+				}
+
+				$rt = Title::newFromText($m[1]);
+
+				if ( !is_null($rt) && $rt->isSpecial( 'Userlogout' ) ) {
+					$rt = NULL;
+				}
+			}
+		}
+		if ($rt != NULL) {
+			$gzCoordListPageTitle = $rt;
+			$gzCoordListPageTitle->invalidateCache();
+
+			$gzCoordListPageArticle = new Article($gzCoordListPageTitle);
+			$gzCoordListPageContent =& $gzCoordListPageArticle->getContent();
+		}
 
 		$contentArray = preg_split('/[\n\r]+/', $gzCoordListPageContent);
 
@@ -104,7 +129,7 @@ class GZCoordinatesSpecialPage extends SpecialPage {
 
 	function loadMessages() {
 		static $messagesLoaded = false;
-		global $wgMessageCache, $wgRequest;
+		global $wgMessageCache;
 		if ($messagesLoaded) return;
 		$messagesLoaded = true;
 
@@ -279,12 +304,36 @@ EOT
 	}
 
 	private function retrieveListOfLocations() {
-		// FIXME: URL isn't properly localized for some reason
 		$gzCoordListPageTitle = Title::newFromText(wfMsg('mlGZCoordinateListPage'));
 		$gzCoordListPageTitle->invalidateCache();
 
 		$gzCoordListPageArticle = new Article($gzCoordListPageTitle);
 		$gzCoordListPageContent =& $gzCoordListPageArticle->getContent();
+
+		# FIXME: this is from Title.php#newFromRedirect. There should be a better way of 'following a redirect only if needed'.
+		$mwRedir = MagicWord::get('redirect');
+		$rt = NULL;
+		if ($mwRedir->matchStart($gzCoordListPageContent)) {
+			$m = array();
+			if (preg_match('/\[{2}(.*?)(?:\||\]{2})/', $gzCoordListPageContent, $m)) {
+				if (substr($m[1],0,1) == ':') {
+					$m[1] = substr( $m[1], 1 );
+				}
+
+				$rt = Title::newFromText($m[1]);
+
+				if ( !is_null($rt) && $rt->isSpecial( 'Userlogout' ) ) {
+					$rt = NULL;
+				}
+			}
+		}
+		if ($rt != NULL) {
+			$gzCoordListPageTitle = $rt;
+			$gzCoordListPageTitle->invalidateCache();
+
+			$gzCoordListPageArticle = new Article($gzCoordListPageTitle);
+			$gzCoordListPageContent =& $gzCoordListPageArticle->getContent();
+		}
 
 		$contentArray = preg_split('/[\n\r]+/', $gzCoordListPageContent);
 
