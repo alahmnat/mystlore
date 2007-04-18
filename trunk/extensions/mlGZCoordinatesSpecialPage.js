@@ -23,6 +23,8 @@ var shahfeeteeFeetConversionFactor = 40/3; // approximation
 var shahfeeteeMetersConversionFactor = 4.064; // approximation
 var feetMetersConversionFactor = 0.3048;
 
+// TODO: should probably use wikibits.js's getElementsByClassName()
+
 function roundValues() {
 	var spanElements = document.getElementsByTagName("span");
 	var i, len = spanElements.length;
