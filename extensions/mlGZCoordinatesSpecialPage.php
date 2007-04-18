@@ -292,12 +292,10 @@ class GZCoordinatesSpecialPage extends SpecialPage {
 
 		if (strcmp($resultString, '') != 0) {
 			// TODO: localization
-			$wgOut->addWikiText(<<<EOT
-==Nearby locations==
-The following locations are in proximity of your given coordinates [[Image:KI angle icon.png]]&nbsp;'''<span class='angleValue'>$this->angle</span>&nbsp;&middot;&nbsp;[[Image:KI distance icon.png]]&nbsp;$this->distance&nbsp;&middot;&nbsp;[[Image:KI elevation icon.png]]&nbsp;$this->elevation''', with the closest first:
-
+			$wgOut->addWikiText("==".wfMsg('mlGZNearbyLocationsHeading')."==\n".wfMsg('mlGZNearbyLocationsDescription').<<<EOT
+ [[Image:KI angle icon.png]]&nbsp;'''<span class='angleValue'>$this->angle</span>&nbsp;&middot;&nbsp;[[Image:KI distance icon.png]]&nbsp;$this->distance&nbsp;&middot;&nbsp;[[Image:KI elevation icon.png]]&nbsp;$this->elevation''', 
 EOT
-.$resultString);
+.wfMsg('mlGZNearbyLocationsDescriptionEnding').":\n".$resultString);
 
 		$wgOut->addHtml('<script type="text/javascript">roundValues();</script>');
 		}
