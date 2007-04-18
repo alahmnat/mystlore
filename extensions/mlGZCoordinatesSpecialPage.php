@@ -228,23 +228,7 @@ EOT;
 			$useDegrees = true;
 		}
 
-		// $locations = array(
-		// 	array(
-		// 		'title' => "Tokotah Courtyard",
-		// 
-		// 		'angle' => 12,
-		// 		'distance' => 34,
-		// 		'elevation' => 56
-		// 	),
-		// 
-		// 	array(
-		// 		'title' => "Canyon Mall",
-		// 
-		// 		'angle' => 583,
-		// 		'distance' => 293,
-		// 		'elevation' => 5902
-		// 	)
-		// );
+		$sortedCoords = array();
 
 		foreach ($coords as $key=>$value) {
 			if ($inputCoord->isEquivalentTo($value)) {
@@ -252,23 +236,19 @@ EOT;
 				continue;
 			}
 
-//			$resultString .= "*".$value->location.$inputCoord->distance_from($value);
-//		}
+			$sortedCoords[strval($inputCoord->distance_from($value))]=$value;
+		}
 
-		// foreach ($locations as $value) {
-		// 	if ($useDegrees) {
-		// 		$value['angle'] = $value['angle'] / (62500/360);
-		// 	}
+		ksort($sortedCoords);
 
-//			$compareCoord = new GreatZeroCoordinate($value['angle'], $value['distance'], $value['elevation']);
-
-			$resultString .= "*'''[[".$value->location."]]''', at {{gz-coord|".$value->angle.'|'.$value->distance.'|'.$value->elevation."}}; <span class='distanceFromValue'>".$inputCoord->distance_from($value)."</span> spantee away\n";
+		foreach($sortedCoords as $key=>$value) {
+			$resultString .= "*'''[[".$value->location."]]''', at {{gz-coord|".$value->angle.'|'.$value->distance.'|'.$value->elevation."}}; <span class='distanceFromValue'>".$key."</span> spantee away\n";
 		}
 
 		if (strcmp($resultString, '') != 0) {
 			$wgOut->addWikiText(<<<EOT
 ==Nearby locations==
-The following locations are in proximity of your given coordinates [[Image:KI angle icon.png]]&nbsp;'''<span class='angleValue'>$this->angle</span>&nbsp;&middot;&nbsp;[[Image:KI distance icon.png]]&nbsp;$this->distance&nbsp;&middot;&nbsp;[[Image:KI elevation icon.png]]&nbsp;$this->elevation''':
+The following locations are in proximity of your given coordinates [[Image:KI angle icon.png]]&nbsp;'''<span class='angleValue'>$this->angle</span>&nbsp;&middot;&nbsp;[[Image:KI distance icon.png]]&nbsp;$this->distance&nbsp;&middot;&nbsp;[[Image:KI elevation icon.png]]&nbsp;$this->elevation''', with the closest first:
 
 EOT
 .$resultString);
