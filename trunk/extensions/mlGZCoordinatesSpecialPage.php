@@ -85,12 +85,18 @@ class GZCoordinatesSpecialPage extends SpecialPage {
 		$this->distance = $wgRequest->getText('distance');
 		$this->elevation = $wgRequest->getText('elevation');
 
+		$this->map = $wgRequest->getText('map');
+
 		$this->angleUnit = $wgRequest->getText('angleUnit');
 
 		$wgOut->addHtml( $this->makeForm() );
 
 		if ((strlen($this->angle) > 0) && (strlen($this->distance) > 0) && (strlen($this->elevation) > 0)) {
 			$this->findNearbyLocations();
+		}
+
+		if (strcmp($this->map, "showZOMG") == 0) {
+			$this->showMap();
 		}
 	}
 
@@ -116,9 +122,9 @@ class GZCoordinatesSpecialPage extends SpecialPage {
 		$form .= Xml::closeElement('select') . '<span style="padding-right: 2em;">&nbsp;</span>';
 
 		$form .= $wgOut->parse('[[Image:KI_distance_icon.png]]', false);
-		$form .= '&nbsp;' . Xml::inputLabel("Distance:", 'distance', 'distance', 10, $this->distance) . '<span style="padding-right: 2em;">&nbsp;spantee&nbsp;</span>';
+		$form .= '&nbsp;' . Xml::inputLabel("Distance:", 'distance', 'distance', 10, $this->distance) . '<span style="padding-right: 2em;">&nbsp;shahfeetee&nbsp;</span>';
 		$form .= $wgOut->parse('[[Image:KI_elevation_icon.png]]', false);
-		$form .= '&nbsp;' . Xml::inputLabel("Elevation:", 'elevation', 'elevation', 10, $this->elevation) . '<span style="padding-right: 2em;">&nbsp;spantee&nbsp;</span>';
+		$form .= '&nbsp;' . Xml::inputLabel("Elevation:", 'elevation', 'elevation', 10, $this->elevation) . '<span style="padding-right: 2em;">&nbsp;shahfeetee&nbsp;</span>';
 		$form .= Xml::submitButton( "Go" ) . '</p>';
 		$form .= Xml::closeElement( 'form' );
 		$form .= '</fieldset>';
@@ -236,7 +242,7 @@ EOT;
 		ksort($sortedCoords);
 
 		foreach($sortedCoords as $key=>$value) {
-			$resultString .= "*'''[[".$value->location."]]''', at {{gz-coord|".$value->angle.'|'.$value->distance.'|'.$value->elevation."}}; <span class='distanceFromValue'>".$key."</span> spantee away\n";
+			$resultString .= "*'''[[".$value->location."]]''', at {{gz-coord|".$value->angle.'|'.$value->distance.'|'.$value->elevation."}}; <span class='distanceFromValue'>".$key."</span> shahfeetee away\n";
 		}
 
 		if (strcmp($resultString, '') != 0) {
@@ -283,6 +289,19 @@ EOT
 
 		$this->compareLocation($inputCoord, $coords);
 	}
+
+	private function showMap() {
+		global $wgOut;
+
+		$coords = $this->retrieveListOfLocations();
+
+		$gzMap = new GreatZeroMap($coords);
+
+		$wgOut->addWikiText("==Map data==");
+
+		$wgOut->addWikiText($gzMap->width());
+		$wgOut->addWikiText($gzMap->height());
+	}
 }
 
 class GreatZeroCoordinate {
@@ -295,10 +314,6 @@ class GreatZeroCoordinate {
 	public $z;
 	
 	function __construct($a_location, $a_angle, $a_distance, $a_elevation) {
-//		global $wgOut;
-
-//		$wgOut->addWikiText("DEBUG: New GreatZeroCoordinate object with L ".$a_location." A ".$a_angle." D ".$a_distance." E ".$a_elevation);
-
 		$angle = $a_angle * 2 * pi() / 62500;
 
 		$this->location = $a_location;
@@ -315,12 +330,75 @@ class GreatZeroCoordinate {
 	}
 
 	function isEquivalentTo($a_other) {
-		global $wgOut;
 		if (($this->angle == $a_other->angle) && ($this->distance == $a_other->distance) && ($this->elevation == $a_other->elevation)) {
 			return true;
 		} else {
 			return false;
 		}
+	}
+}
+
+class GreatZeroMap {
+	public $coordinates;
+	public $width;
+	public $height;
+
+	function __construct($inCoordinates) {
+		$this->coordinates = $inCoordinates;
+	}
+
+	function width() {
+		if (! isset($this->height)) {
+			$this->determineWidth();
+		}
+
+		return $this->width;
+	}
+
+	function height() {
+		if (! isset($this->height)) {
+			$this->determineHeight();
+		}
+
+		return $this->height;
+	}
+
+	function determineWidth() {
+		global $wgOut;
+
+		$highest = 0;
+		$lowest = 0;
+
+		foreach($this->coordinates as $key=>$value) {
+			if ($value->x > $highest) {
+				$highest = $value->x;
+			}
+
+			if ($value->x < $lowest) {
+				$lowest = $value->x;
+			}
+		}
+
+		$this->width = (abs($highest)+abs($lowest));
+	}
+
+	function determineHeight() {
+		global $wgOut;
+
+		$highest = 0;
+		$lowest = 0;
+
+		foreach($this->coordinates as $key=>$value) {
+			if ($value->y > $highest) {
+				$highest = $value->y;
+			}
+
+			if ($value->y < $lowest) {
+				$lowest = $value->y;
+			}
+		}
+
+		$this->height = (abs($highest)+abs($lowest));
 	}
 }
 ?>
