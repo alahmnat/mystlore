@@ -100,6 +100,56 @@ class GZCoordinatesSpecialPage extends SpecialPage {
 		}
 	}
 
+	private function getHumanUnit($unit, $value) {
+		global $wgOut;
+
+		// TODO: localization!
+
+		switch ($unit) {
+			case 'toran':
+				if ($value != 1) {
+					$result = 'torantee';
+				}
+				else $result = $unit;
+
+				break;
+
+			case 'degree':
+				if ($value != 1) {
+					$result = 'degrees';
+				}
+				else $result = $unit;
+
+				break;
+
+			case 'shahfee':
+				if ($value != 1) {
+					$result = 'shahfeetee';
+				}
+				else $result = $unit;
+
+				break;
+
+			case 'foot':
+				if ($value != 1) {
+					$result = 'feet';
+				}
+				else $result = $unit;
+
+				break;
+
+			case 'meter':
+				if ($value != 1) {
+					$result = 'meters';
+				}
+				else $result = $unit;
+
+				break;
+		}
+
+		return $wgOut->parse($result, false);
+	}
+
 	// should use wfMsg and wfMsgHtml to localize this stuff
 	private function makeForm() {
 		global $wgScript, $wgOut;
@@ -113,18 +163,18 @@ class GZCoordinatesSpecialPage extends SpecialPage {
 
 		$form .= Xml::openElement('select', array('name' => "angleUnit", 'id' => "angleUnit", 'onchange' => "changeAngleUnit();"));
 		if (strcmp($this->angleUnit, "degrees") == 0) {
-			$form .= Xml::option("torantee");
-			$form .= Xml::option("degrees", '', true);
+			$form .= Xml::option($this->getHumanUnit("toran", 0));
+			$form .= Xml::option($this->getHumanUnit("degree", 0), '', true);
 		} else {
-			$form .= Xml::option("torantee", '', true);
-			$form .= Xml::option("degrees");
+			$form .= Xml::option($this->getHumanUnit("toran", 0), '', true);
+			$form .= Xml::option($this->getHumanUnit("degree", 0));
 		}
 		$form .= Xml::closeElement('select') . '<span style="padding-right: 2em;">&nbsp;</span>';
 
 		$form .= $wgOut->parse('[[Image:KI_distance_icon.png]]', false);
-		$form .= '&nbsp;' . Xml::inputLabel("Distance:", 'distance', 'distance', 10, $this->distance) . '<span style="padding-right: 2em;">&nbsp;shahfeetee&nbsp;</span>';
+		$form .= '&nbsp;' . Xml::inputLabel("Distance:", 'distance', 'distance', 10, $this->distance) . '<span style="padding-right: 2em;">&nbsp;'.$this->getHumanUnit("shahfee", 0).'&nbsp;</span>';
 		$form .= $wgOut->parse('[[Image:KI_elevation_icon.png]]', false);
-		$form .= '&nbsp;' . Xml::inputLabel("Elevation:", 'elevation', 'elevation', 10, $this->elevation) . '<span style="padding-right: 2em;">&nbsp;shahfeetee&nbsp;</span>';
+		$form .= '&nbsp;' . Xml::inputLabel("Elevation:", 'elevation', 'elevation', 10, $this->elevation) . '<span style="padding-right: 2em;">&nbsp;'.$this->getHumanUnit("shahfee", 0).'&nbsp;</span>';
 		$form .= Xml::submitButton( "Go" ) . '</p>';
 		$form .= Xml::closeElement( 'form' );
 		$form .= '</fieldset>';
@@ -242,7 +292,7 @@ EOT;
 		ksort($sortedCoords);
 
 		foreach($sortedCoords as $key=>$value) {
-			$resultString .= "*'''[[".$value->location."]]''', at {{gz-coord|".$value->angle.'|'.$value->distance.'|'.$value->elevation."}}; <span class='distanceFromValue'>".$key."</span> shahfeetee away\n";
+			$resultString .= "*'''[[".$value->location."]]''', at {{gz-coord|".$value->angle.'|'.$value->distance.'|'.$value->elevation."}}; <span class='distanceFromValue'>".$key."</span> ".$this->getHumanUnit('shahfee', $key)." away\n";
 		}
 
 		if (strcmp($resultString, '') != 0) {
