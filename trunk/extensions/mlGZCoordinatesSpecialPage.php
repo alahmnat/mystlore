@@ -85,18 +85,12 @@ class GZCoordinatesSpecialPage extends SpecialPage {
 		$this->distance = $wgRequest->getText('distance');
 		$this->elevation = $wgRequest->getText('elevation');
 
-		$this->show = $wgRequest->getText('show');
-
 		$this->angleUnit = $wgRequest->getText('angleUnit');
 
 		$wgOut->addHtml( $this->makeForm() );
 
 		if ((strlen($this->angle) > 0) && (strlen($this->distance) > 0) && (strlen($this->elevation) > 0)) {
 			$this->findNearbyLocations();
-		}
-
-		if (strcmp($this->show, "all") == 0) {
-			$this->showAllLocations();
 		}
 	}
 
@@ -288,12 +282,6 @@ EOT
 		$inputCoord = new GreatZeroCoordinate('', $this->angle, $this->distance, $this->elevation);
 
 		$this->compareLocation($inputCoord, $coords);
-	}
-
-	private function showAllLocations() {
-		global $wgOut;
-
-		$wgOut->addWikiText("==All stored locations==");
 	}
 }
 
