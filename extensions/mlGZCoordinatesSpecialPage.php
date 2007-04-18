@@ -85,9 +85,11 @@ class GZCoordinatesSpecialPage extends SpecialPage {
 		$this->distance = $wgRequest->getText('distance');
 		$this->elevation = $wgRequest->getText('elevation');
 
-		$this->map = $wgRequest->getText('map');
+		$this->debug = $wgRequest->getText('debug');
 
 		$this->angleUnit = $wgRequest->getText('angleUnit');
+		$this->distanceUnit = $wgRequest->getText('distanceUnit');
+		$this->elevationUnit = $wgRequest->getText('elevationUnit');
 
 		$wgOut->addHtml( $this->makeForm() );
 
@@ -95,7 +97,7 @@ class GZCoordinatesSpecialPage extends SpecialPage {
 			$this->findNearbyLocations();
 		}
 
-		if (strcmp($this->map, "showZOMG") == 0) {
+		if ($this->debug == "yes") {
 			$this->showMap();
 		}
 	}
@@ -158,23 +160,67 @@ class GZCoordinatesSpecialPage extends SpecialPage {
 		$form .= Xml::openElement( 'form', array( 'method' => 'get', 'action' => $wgScript ) );
 		$form .= Xml::hidden( 'title', $title->getPrefixedText() );
 		$form .= '<p>';
+
 		$form .= $wgOut->parse('[[Image:KI_angle_icon.png]]', false);
 		$form .= '&nbsp;' . Xml::inputLabel("Angle:", 'angle', 'angle', 10, $this->angle) . '&nbsp;';
-
 		$form .= Xml::openElement('select', array('name' => "angleUnit", 'id' => "angleUnit", 'onchange' => "changeAngleUnit();"));
 		if (strcmp($this->angleUnit, "degrees") == 0) {
 			$form .= Xml::option($this->getHumanUnit("toran", 0));
 			$form .= Xml::option($this->getHumanUnit("degree", 0), '', true);
-		} else {
+		} else { // torantee
 			$form .= Xml::option($this->getHumanUnit("toran", 0), '', true);
 			$form .= Xml::option($this->getHumanUnit("degree", 0));
 		}
 		$form .= Xml::closeElement('select') . '<span style="padding-right: 2em;">&nbsp;</span>';
 
 		$form .= $wgOut->parse('[[Image:KI_distance_icon.png]]', false);
-		$form .= '&nbsp;' . Xml::inputLabel("Distance:", 'distance', 'distance', 10, $this->distance) . '<span style="padding-right: 2em;">&nbsp;'.$this->getHumanUnit("shahfee", 0).'&nbsp;</span>';
+		$form .= '&nbsp;' . Xml::inputLabel("Distance:", 'distance', 'distance', 10, $this->distance) . '&nbsp;';
+		$form .= Xml::openElement('select', array('name' => "distanceUnit", 'id' => "distanceUnit", 'onchange' => "changeDistanceUnit();"));
+		switch ($this->distanceUnit) {
+			case 'feet':
+				$form .= Xml::option($this->getHumanUnit("shahfee", 0));
+				$form .= Xml::option($this->getHumanUnit("foot", 0), '', true);
+				$form .= Xml::option($this->getHumanUnit("meter", 0));
+				break;
+
+			case 'meters':
+				$form .= Xml::option($this->getHumanUnit("shahfee", 0));
+				$form .= Xml::option($this->getHumanUnit("foot", 0));
+				$form .= Xml::option($this->getHumanUnit("meter", 0), '', true);
+				break;
+
+			default: // shahfeetee
+				$form .= Xml::option($this->getHumanUnit("shahfee", 0), '', true);
+				$form .= Xml::option($this->getHumanUnit("foot", 0));
+				$form .= Xml::option($this->getHumanUnit("meter", 0));
+				break;
+		}
+		$form .= Xml::closeElement('select') . '<span style="padding-right: 2em;">&nbsp;</span>';
+
 		$form .= $wgOut->parse('[[Image:KI_elevation_icon.png]]', false);
-		$form .= '&nbsp;' . Xml::inputLabel("Elevation:", 'elevation', 'elevation', 10, $this->elevation) . '<span style="padding-right: 2em;">&nbsp;'.$this->getHumanUnit("shahfee", 0).'&nbsp;</span>';
+		$form .= '&nbsp;' . Xml::inputLabel("Elevation:", 'elevation', 'elevation', 10, $this->elevation) . '&nbsp;';
+		$form .= Xml::openElement('select', array('name' => "elevationUnit", 'id' => "elevationUnit", 'onchange' => "changeElevationUnit();"));
+		switch ($this->elevationUnit) {
+			case 'feet':
+				$form .= Xml::option($this->getHumanUnit("shahfee", 0));
+				$form .= Xml::option($this->getHumanUnit("foot", 0), '', true);
+				$form .= Xml::option($this->getHumanUnit("meter", 0));
+				break;
+
+			case 'meters':
+				$form .= Xml::option($this->getHumanUnit("shahfee", 0));
+				$form .= Xml::option($this->getHumanUnit("foot", 0));
+				$form .= Xml::option($this->getHumanUnit("meter", 0), '', true);
+				break;
+
+			default: // shahfeetee
+				$form .= Xml::option($this->getHumanUnit("shahfee", 0), '', true);
+				$form .= Xml::option($this->getHumanUnit("foot", 0));
+				$form .= Xml::option($this->getHumanUnit("meter", 0));
+				break;
+		}
+		$form .= Xml::closeElement('select') . '<span style="padding-right: 2em;">&nbsp;</span>';
+
 		$form .= Xml::submitButton( "Go" ) . '</p>';
 		$form .= Xml::closeElement( 'form' );
 		$form .= '</fieldset>';
