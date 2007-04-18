@@ -18,6 +18,11 @@
 	http://www.opensource.org/licenses/mit-license.php
 */
 
+var toranteeDegreesConversionFactor = 62500/360;
+var shahfeeteeFeetConversionFactor = 40/3; // approximation
+var shahfeeteeMetersConversionFactor = 4.064; // approximation
+var feetMetersConversionFactor = 0.3048;
+
 function roundValues() {
 	var spanElements = document.getElementsByTagName("span");
 	var i, len = spanElements.length;
@@ -34,31 +39,29 @@ function roundValues() {
 }
 
 function changeAngleUnit() {
-	angleUnitTDConversionFactor = 62500/360; // 62500 torantee ^= 360 degrees
-
 	var spanElements = document.getElementsByTagName("span");
 	var i, len = spanElements.length;
 
 	switch (document.getElementById('angleUnit').selectedIndex) {
 		case 0: // degrees to torantee
-			document.getElementById('angle').value *= angleUnitTDConversionFactor;
+			document.getElementById('angle').value *= toranteeDegreesConversionFactor;
 
 			for (i = 0; i < len; i++) {
 				var elem = spanElements[i];
 				if (elem.className == "angleValue") {
-					elem.innerHTML *= angleUnitTDConversionFactor;
+					elem.innerHTML *= toranteeDegreesConversionFactor;
 				}
 			}
 
 			break;
 
 		case 1: // torantee to degrees
-			document.getElementById('angle').value /= angleUnitTDConversionFactor;
+			document.getElementById('angle').value /= toranteeDegreesConversionFactor;
 
 			for (i = 0; i < len; i++) {
 				var elem = spanElements[i];
 				if (elem.className == "angleValue") {
-					elem.innerHTML /= angleUnitTDConversionFactor;
+					elem.innerHTML /= toranteeDegreesConversionFactor;
 				}
 			}
 
@@ -71,10 +74,6 @@ function changeAngleUnit() {
 var originalDistanceUnit = document.getElementById('distanceUnit').selectedIndex;
 
 function changeDistanceUnit() {
-	distanceUnitSFConversionFactor = 3/40; // 3 shahfee ^= roughly 40 feet
-	distanceUnitSMConversionFactor = 1/4.064; // 1 span ^= roughly 4.064 meters
-	distanceUnitFMConversionFactor = 1/0.3048; // 1 foot ^= 0.3048 meters
-
 	var spanElements = document.getElementsByTagName("span");
 	var i, len = spanElements.length;
 
@@ -84,72 +83,72 @@ function changeDistanceUnit() {
 
 	switch (distanceUnitConcat) {
 		case "01": // shahfeetee to feet
-			document.getElementById('distance').value *= distanceUnitSFConversionFactor;
+			document.getElementById('distance').value *= shahfeeteeFeetConversionFactor;
 
 			for (i = 0; i < len; i++) {
 				var elem = spanElements[i];
 				if (elem.className == "distanceValue") {
-					elem.innerHTML *= distanceUnitSFConversionFactor;
+					elem.innerHTML *= shahfeeteeFeetConversionFactor;
 				}
 			}
 
 			break;
 
 		case "02": // shahfeetee to meters
-			document.getElementById('distance').value *= distanceUnitSMConversionFactor;
+			document.getElementById('distance').value *= shahfeeteeMetersConversionFactor;
 
 			for (i = 0; i < len; i++) {
 				var elem = spanElements[i];
 				if (elem.className == "distanceValue") {
-					elem.innerHTML *= distanceUnitSMConversionFactor;
+					elem.innerHTML *= shahfeeteeMetersConversionFactor;
 				}
 			}
 
 			break;
 
 		case "10": // feet to shahfeetee
-			document.getElementById('distance').value /= distanceUnitSFConversionFactor;
+			document.getElementById('distance').value /= shahfeeteeFeetConversionFactor;
 
 			for (i = 0; i < len; i++) {
 				var elem = spanElements[i];
 				if (elem.className == "distanceValue") {
-					elem.innerHTML /= distanceUnitSFConversionFactor;
+					elem.innerHTML /= shahfeeteeFeetConversionFactor;
 				}
 			}
 
 			break;
 
 		case "12": // feet to meters
-			document.getElementById('distance').value *= distanceUnitFMConversionFactor;
+			document.getElementById('distance').value *= feetMetersConversionFactor;
 
 			for (i = 0; i < len; i++) {
 				var elem = spanElements[i];
 				if (elem.className == "distanceValue") {
-					elem.innerHTML *= distanceUnitFMConversionFactor;
+					elem.innerHTML *= feetMetersConversionFactor;
 				}
 			}
 
 			break;
 
 		case "20": // meters to shahfeetee
-			document.getElementById('distance').value /= distanceUnitSMConversionFactor;
+			document.getElementById('distance').value /= shahfeeteeMetersConversionFactor;
 
 			for (i = 0; i < len; i++) {
 				var elem = spanElements[i];
 				if (elem.className == "distanceValue") {
-					elem.innerHTML /= distanceUnitSMConversionFactor;
+					elem.innerHTML /= shahfeeteeMetersConversionFactor;
 				}
 			}
 
 			break;
 
 		case "21": // meters to feet
-			document.getElementById('distance').value /= distanceUnitFMConversionFactor;
+			document.getElementById('distance').value /= feetMetersConversionFactor;
 
 			for (i = 0; i < len; i++) {
 				var elem = spanElements[i];
 				if (elem.className == "distanceValue") {
-					elem.innerHTML /= distanceUnitFMConversionFactor;
+					elem.innerHTML /= feetMetersConversionFactor;
 				}
 			}
 
@@ -164,10 +163,6 @@ function changeDistanceUnit() {
 var originalElevationUnit = document.getElementById('elevationUnit').selectedIndex;
 
 function changeElevationUnit() {
-	elevationUnitSFConversionFactor = 3/40; // 3 shahfee ^= roughly 40 feet
-	elevationUnitSMConversionFactor = 1/4.064; // 1 span ^= roughly 4.064 meters
-	elevationUnitFMConversionFactor = 1/0.3048; // 1 foot ^= 0.3048 meters
-
 	var spanElements = document.getElementsByTagName("span");
 	var i, len = spanElements.length;
 
@@ -177,72 +172,72 @@ function changeElevationUnit() {
 
 	switch (elevationUnitConcat) {
 		case "01": // shahfeetee to feet
-			document.getElementById('elevation').value *= elevationUnitSFConversionFactor;
+			document.getElementById('elevation').value *= shahfeeteeFeetConversionFactor;
 
 			for (i = 0; i < len; i++) {
 				var elem = spanElements[i];
 				if (elem.className == "elevationValue") {
-					elem.innerHTML *= elevationUnitSFConversionFactor;
+					elem.innerHTML *= shahfeeteeFeetConversionFactor;
 				}
 			}
 
 			break;
 
 		case "02": // shahfeetee to meters
-			document.getElementById('elevation').value *= elevationUnitSMConversionFactor;
+			document.getElementById('elevation').value *= shahfeeteeMetersConversionFactor;
 
 			for (i = 0; i < len; i++) {
 				var elem = spanElements[i];
 				if (elem.className == "elevationValue") {
-					elem.innerHTML *= elevationUnitSMConversionFactor;
+					elem.innerHTML *= shahfeeteeMetersConversionFactor;
 				}
 			}
 
 			break;
 
 		case "10": // feet to shahfeetee
-			document.getElementById('elevation').value /= elevationUnitSFConversionFactor;
+			document.getElementById('elevation').value /= shahfeeteeFeetConversionFactor;
 
 			for (i = 0; i < len; i++) {
 				var elem = spanElements[i];
 				if (elem.className == "elevationValue") {
-					elem.innerHTML /= elevationUnitSFConversionFactor;
+					elem.innerHTML /= shahfeeteeFeetConversionFactor;
 				}
 			}
 
 			break;
 
 		case "12": // feet to meters
-			document.getElementById('elevation').value *= elevationUnitFMConversionFactor;
+			document.getElementById('elevation').value *= feetMetersConversionFactor;
 
 			for (i = 0; i < len; i++) {
 				var elem = spanElements[i];
 				if (elem.className == "elevationValue") {
-					elem.innerHTML *= elevationUnitFMConversionFactor;
+					elem.innerHTML *= feetMetersConversionFactor;
 				}
 			}
 
 			break;
 
 		case "20": // meters to shahfeetee
-			document.getElementById('elevation').value /= elevationUnitSMConversionFactor;
+			document.getElementById('elevation').value /= shahfeeteeMetersConversionFactor;
 
 			for (i = 0; i < len; i++) {
 				var elem = spanElements[i];
 				if (elem.className == "elevationValue") {
-					elem.innerHTML /= elevationUnitSMConversionFactor;
+					elem.innerHTML /= shahfeeteeMetersConversionFactor;
 				}
 			}
 
 			break;
 
 		case "21": // meters to feet
-			document.getElementById('elevation').value /= elevationUnitFMConversionFactor;
+			document.getElementById('elevation').value /= feetMetersConversionFactor;
 
 			for (i = 0; i < len; i++) {
 				var elem = spanElements[i];
 				if (elem.className == "elevationValue") {
-					elem.innerHTML /= elevationUnitFMConversionFactor;
+					elem.innerHTML /= feetMetersConversionFactor;
 				}
 			}
 
