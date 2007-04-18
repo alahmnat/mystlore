@@ -287,17 +287,27 @@ class GZCoordinatesSpecialPage extends SpecialPage {
 		ksort($sortedCoords);
 
 		foreach($sortedCoords as $key=>$value) {
-			$resultString .= "*'''[[".$value->location."]]''', ".wfMsg('mlGZat')." {{gz-coord|".$value->angle.'|'.$value->distance.'|'.$value->elevation."}}; <span class='distanceFromValue'>".$key."</span> ".$this->getHumanUnit('shahfee', $key)." ".wfMsg('mlGZaway')."\n";
+			$parsedLocation = $wgOut->parse("[[".$value->location."]]", false);
+			$parsedCoordinate = $wgOut->parse("{{gz-coord|".$value->angle.'|'.$value->distance.'|'.$value->elevation."}}", false);
+
+			$tableResultString .= '<tr><td>'.$parsedLocation.'</td><td>'.$parsedCoordinate.'</td><td><span class="distanceFromValue">'.$key.'</td></tr>'."\n";
 		}
 
-		if (strcmp($resultString, '') != 0) {
-			// TODO: localization
-			$wgOut->addWikiText("==".wfMsg('mlGZNearbyLocationsHeading')."==\n".wfMsg('mlGZNearbyLocationsDescription').<<<EOT
- [[Image:KI angle icon.png]]&nbsp;'''<span class='angleValue'>$this->angle</span>&nbsp;&middot;&nbsp;[[Image:KI distance icon.png]]&nbsp;$this->distance&nbsp;&middot;&nbsp;[[Image:KI elevation icon.png]]&nbsp;$this->elevation''', 
-EOT
-.wfMsg('mlGZNearbyLocationsDescriptionEnding').":\n".$resultString);
+		if (strcmp($tableResultString, '') != 0) {
+					$wgOut->addWikiText("==".wfMsg('mlGZNearbyLocationsHeading')."==\n".wfMsg('mlGZNearbyLocationsDescription').<<<EOT
+			 [[Image:KI angle icon.png]]&nbsp;'''<span class='angleValue'>$this->angle</span>&nbsp;&middot;&nbsp;[[Image:KI distance icon.png]]&nbsp;$this->distance&nbsp;&middot;&nbsp;[[Image:KI elevation icon.png]]&nbsp;$this->elevation''':
 
-		$wgOut->addHtml('<script type="text/javascript">roundValues();</script>');
+EOT
+			);
+
+			$wgOut->addHtml('<table style="width: 80%; margin-top: 1em;" class="sortable">'."\n");
+				$wgOut->addHtml("<thead>\n<tr><th>Location</th><th>Coordinate</th><th>Relative distance</th></tr>\n</thead>\n<tbody>\n");
+
+			$wgOut->addHtml($tableResultString);
+
+			$wgOut->addHtml("</tbody>\n</table>\n");
+
+			$wgOut->addHtml('<script type="text/javascript">roundValues();</script>');
 		}
 	}
 
