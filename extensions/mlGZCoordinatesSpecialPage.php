@@ -236,7 +236,7 @@ class GZCoordinatesSpecialPage extends SpecialPage {
 		$form .= Xml::closeElement( 'form' );
 		$form .= '</fieldset>';
 
-		$form .= '<script type="text/javascript" src="'.$wgScriptPath.'/extensions/mlGZCoordinatesSpecialPage.js">';
+		$form .= "\n".'<script type="text/javascript" src="'.$wgScriptPath.'/extensions/mlGZCoordinatesSpecialPage.js"></script>'."\n";
 
 		return $form;
 	}
