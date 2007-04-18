@@ -66,6 +66,30 @@ $mlGZCoordinatesMessages = array(
 		'mlGZmeters' => 'Meter',
 		'mlGZat' => 'bei',
 		'mlGZaway' => 'entfernt'
+	),
+	'nl' => array( 
+		'gzcoordinatesspecialpage' => 'Great Zero-coördinaten',
+		'mlGZSearchForNearbyLocations' => 'Zoek naar dichtbijzijnde locaties:',
+		'mlGZCoordinateListPage' => 'Lijst van gekende GZ-coördinaten',
+		'mlGZNearbyLocationsHeading' => 'Locaties in de omtrek',
+		'mlGZNearbyLocationsDescription' => 'De volgende locaties zijn in de omtrek van uw gegeven coördinaten',
+		'mlGZNearbyLocationsDescriptionEnding' => 'met de dichtstbijzijnde eerst',
+		'mlGZAngle' => 'Hoek:',
+		'mlGZDistance' => 'Afstand:',
+		'mlGZElevation' => 'Hoogte:',
+		'mlGZGoButton' => 'Ga',
+		'mlGZtoran' => 'toran',
+		'mlGZtorantee' => 'torantee',
+		'mlGZshahfee' => 'shahfee',
+		'mlGZshahfeetee' => 'shahfeetee',
+		'mlGZdegree' => 'graad',
+		'mlGZdegrees' => 'graden',
+		'mlGZfoot' => 'voet',
+		'mlGZfeet' => 'voet',
+		'mlGZmeter' => 'meter',
+		'mlGZmeters' => 'meter',
+		'mlGZat' => 'op',
+		'mlGZaway' => 'verwijderd'
 	)
 );
 
