@@ -378,8 +378,7 @@ EOT
 
 		$wgOut->addWikiText("==Map data==");
 
-		$wgOut->addWikiText($gzMap->width());
-		$wgOut->addWikiText($gzMap->height());
+		$wgOut->addHtml($gzMap->buildQuery());
 	}
 }
 
@@ -393,6 +392,8 @@ class GreatZeroCoordinate {
 	public $z;
 	
 	function __construct($a_location, $a_angle, $a_distance, $a_elevation) {
+		global $wgRequest, $wgOut;
+
 		$angle = $a_angle * 2 * pi() / 62500;
 
 		$this->location = $a_location;
@@ -421,25 +422,14 @@ class GreatZeroMap {
 	public $coordinates;
 	public $width;
 	public $height;
+	public $shiftX;
+	public $shiftY;
 
 	function __construct($inCoordinates) {
 		$this->coordinates = $inCoordinates;
-	}
 
-	function width() {
-		if (! isset($this->height)) {
-			$this->determineWidth();
-		}
-
-		return $this->width;
-	}
-
-	function height() {
-		if (! isset($this->height)) {
-			$this->determineHeight();
-		}
-
-		return $this->height;
+		$this->determineWidth();
+		$this->determineHeight();
 	}
 
 	function determineWidth() {
@@ -458,12 +448,12 @@ class GreatZeroMap {
 			}
 		}
 
+		$this->shiftX = $lowest * -1;
+
 		$this->width = (abs($highest)+abs($lowest));
 	}
 
 	function determineHeight() {
-		global $wgOut;
-
 		$highest = 0;
 		$lowest = 0;
 
@@ -475,9 +465,24 @@ class GreatZeroMap {
 			if ($value->y < $lowest) {
 				$lowest = $value->y;
 			}
+
 		}
 
+		$this->shiftY = $lowest * -1;
+
 		$this->height = (abs($highest)+abs($lowest));
+	}
+
+	function buildQuery() {
+		$pointsString = '?width='.$this->width.'&height='.$this->height;
+		$i=1;
+
+		foreach($this->coordinates as $key=>$value) {
+			$pointsString .= '&p'.$i.'='.round($value->x + $this->shiftX).'|'.round($value->y + $this->shiftY);
+			$i++;
+		}
+
+		return '<img src="/extensions/mlGZCoordinatesMap.php'.$pointsString.'" style="width: 80%;" />';
 	}
 }
 ?>
