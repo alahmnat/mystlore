@@ -301,7 +301,7 @@ EOT
 			);
 
 			$wgOut->addHtml('<table style="width: 80%; margin-top: 1em;" class="sortable">'."\n");
-				$wgOut->addHtml("<thead>\n<tr><th>Location</th><th>Coordinate</th><th>Relative distance</th></tr>\n</thead>\n<tbody>\n");
+				$wgOut->addHtml("<thead>\n<tr><th>".wfMsg('mlGZLocationTableHeader')."</th><th>".wfMsg('mlGZCoordinateTableHeader')."</th><th>".wfMsg('mlGZRelativeDistanceTableHeader')."</th></tr>\n</thead>\n<tbody>\n");
 
 			$wgOut->addHtml($tableResultString);
 
