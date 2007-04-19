@@ -474,11 +474,11 @@ class GreatZeroMap {
 	}
 
 	function buildQuery() {
-		$pointsString = '?width='.$this->width.'&height='.$this->height;
+		$pointsString = '?size='.round($this->width).'|'.round($this->height);
 		$i=1;
 
 		foreach($this->coordinates as $key=>$value) {
-			$pointsString .= '&p'.$i.'='.round($value->x + $this->shiftX).'|'.round($value->y + $this->shiftY);
+			$pointsString .= '&p'.$i.'='.round($value->x + $this->shiftX).'|'.round($value->y + $this->shiftY).'|'.urlencode($value->location);
 			$i++;
 		}
 

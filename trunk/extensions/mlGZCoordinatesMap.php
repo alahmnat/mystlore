@@ -8,18 +8,17 @@ $query = explode('&', $_SERVER['QUERY_STRING']);
 foreach($query as $value) {
 	$queryValue = explode('=', $value);
 
-	if (strcmp($queryValue[0], 'width') == 0) {
-		$width = $queryValue[1];
-		array_shift($query);
-	}
-	if (strcmp($queryValue[0], 'height') == 0) {
-		$height = $queryValue[1];
+	if (strcmp($queryValue[0], 'size') == 0) {
+		$sizeValue = explode('|', $queryValue[1]);
+
+		$width = $sizeValue[0];
+		$height = $sizeValue[1];
 		array_shift($query);
 	}
 }
 
-$width = round($width+20);
-$height = round($height+20);
+$width = $width+20;
+$height = $height+20;
 
 $im = @imagecreatetruecolor($width, $height)
       or die("Cannot Initialize new GD image stream");
@@ -33,7 +32,13 @@ foreach($query as $value) {
 	$queryValue = explode('=', $value);
 
 	$pointValue = explode('|', $queryValue[1]);
-	imageellipse($im, $pointValue[0]+10, $pointValue[1]+10, 5, 5, $text_color);
+
+	$x = $pointValue[0]+10;
+	$y = $pointValue[1]+10;
+	$location = urldecode($pointValue[2]);
+
+	imageellipse($im, $x, $y, 5, 5, $text_color);
+	imagestring($im, 3, $x, $y, $location, $text_color);
 }
 
 imagepng($im);
