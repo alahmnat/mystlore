@@ -55,7 +55,7 @@ function mapImage ($query, $width, $height) {
 		$location = urldecode($pointValue[2]);
 
 		imageellipse($im, $x, $y, 5, 5, $text_color);
-		imagestring($im, 3, $x, $y, $location, $text_color);
+//		imagestring($im, 3, $x, $y, $location, $text_color);
 	}
 
 	imagepng($im);
@@ -63,10 +63,33 @@ function mapImage ($query, $width, $height) {
 }
 
 function pointsArray ($query, $width, $height) {
+	header ("Content-type: text/javascript");
+
 	echo <<<EOT
-document.body.style.display = 'none';
+mlGZCoordinates = [
 EOT
 ;
+
+	$i = 0;
+	foreach($query as $value) {
+		if ($i != 0) {
+			echo ',';
+		}
+		$i++;
+		$queryValue = explode('=', $value);
+
+		$pointValue = explode('|', $queryValue[1]);
+
+		$x = $pointValue[0];//+10;
+		$y = $pointValue[1];//+10;
+		$location = urldecode($pointValue[2]);
+
+		echo '
+	["'.$location.'", '.$x.', '.$y.']';
+	}
+
+	echo "
+]
+";
 }
 ?>
-

@@ -17,7 +17,6 @@
 	The full license can be retrieved at:
 	http://www.opensource.org/licenses/mit-license.php
 */
-mlGZCoordinates = [["Ferry Terminal", 200,600], ["Ae'gura", 300, 600]];
 
 // kudos to http://www.quirksmode.org/js/findpos.html
 function findPos(obj) {
@@ -55,13 +54,13 @@ function mlGZShowMapPointLabel(event, width, height) {
 	for (i = 0; i < len; i++) {
 		var elem = divElements[i];
 		if (elem.className == "gzMapPointLabel") {
-			elem.parentNode.removeChild(elem);
+//			elem.parentNode.removeChild(elem);
 		}
 	}
 
 	posArray = findPos(document.getElementById('mlGZMap'));
-	mapLeft = posArray[0];
-	mapTop = posArray[1];
+	mapLeft = posArray[0]+10;
+	mapTop = posArray[1]+10;
 
 	widthFactor = document.getElementById('mlGZMap').width / width;
 	heightFactor = document.getElementById('mlGZMap').height / height;
@@ -79,7 +78,7 @@ function mlGZShowMapPointLabel(event, width, height) {
 	labelElement.addEventListener('mouseout', mlGZRemoveMapPointLabel, false);
 
 	for (point in mlGZCoordinates) {
-		if (mlGZComparePoints(event.pageX, event.pageY, mlGZCoordinates[point][1], mlGZCoordinates[point][2], 50)) {
+		if (mlGZComparePoints(event.pageX, event.pageY, (mlGZCoordinates[point][1]*widthFactor)+mapLeft, (mlGZCoordinates[point][2]*heightFactor)+mapTop, 5)) {
 			labelElement.innerHTML = mlGZCoordinates[point][0];
 		}
 	}
