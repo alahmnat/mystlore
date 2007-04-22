@@ -19,7 +19,7 @@
 */
 
 $mlGZCoordinatesMessages = array(
-	'en' => array( 
+	'en' => array(
 		'gzcoordinatesspecialpage' => 'Great Zero Coordinates',
 		'mlGZSearchForNearbyLocations' => 'Search for nearby locations:',
 		'mlGZCoordinateListPage' => 'List of known GZ coordinates',
