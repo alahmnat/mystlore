@@ -25,9 +25,39 @@ $wgHooks['ArticleSaveComplete'][] = "mlGZAddCoordinate";
 require_once( "$IP/includes/SpecialPage.php" );
 
 function mlGZCoordinatesSpecialPageLoader() {
-	global $IP, $wgMessageCache;
+	global $IP, $wgMessageCache, $wgParser;
 
+	$wgParser->setHook("mlGZCoordinateList", "renderGZCoordinateList");
 	SpecialPage::addPage(new GZCoordinatesSpecialPage());
+}
+
+function renderGZCoordinateList($input, $argv, &$parser) {
+	$parser->setOutputType(OT_WIKI);
+
+	$output .= '<p><small>(<i>Editors:</i> Please, do not edit this page. Rather, if you wish to add or correct a location, place a gz-coords template (or correct the existing one) inside the appropriate article for the location whose coordinates you wish to add. E.g., to store the coordinates of the Tokotah Courtyard, edit <a href="/wiki/Tokotah_Courtyard" title="Tokotah Courtyard">Tokotah Courtyard</a>. An article must have no more than one such template; each article corresponds to at most one coordinate.)</small>
+	</p><p>Below is a list of <b><a href="/wiki/Great_Zero" title="Great Zero">Great Zero</a></b> coordinates that have been collected. You can use the <a href="/wiki/Special:GZCoordinatesSpecialPage" title="Special:GZCoordinatesSpecialPage">Great Zero Coordinates special page</a> to compare coordinates with each other, and to have their relative distances "as the crow flies" calculated.</p>
+
+<ul>
+';
+
+	$contentArray = preg_split('/[\n\r]+/', $input);
+
+	foreach ($contentArray as $key=>$value) {
+		// filter out invalid lines
+		if (preg_match_all('/\|/', $value, $matches) != 3) {
+			unset($contentArray[$key]);
+			continue;
+		}
+
+		// ensure only one line per article
+		$line = explode('|', $value);
+
+		$output .= '	<li><strong><a href="/wiki/'.urlencode($line[0]).'">'.$line[0]."</a>:</strong> ".$line[1].", ".$line[2].", ".$line[3]."</li>\n";
+	}
+
+	$output .= "</ul>";
+
+	return $output;
 }
 
 function mlGZLocalizedSpecialPageName(&$specialPageArray) {
@@ -87,26 +117,31 @@ function mlGZAddCoordinate(&$editedArticle) {
 
 		$contentArray = preg_split('/[\n\r]+/', $gzCoordListPageContent);
 
-		$commentLine = $contentArray[0];
-
-		unset($contentArray[0]);
-
-		$addedBit = '';
+		$before = "<mlGZCoordinateList>\n";
+		$newContent = '';
+		$after = "\n</mlGZCoordinateList>";
 		
-		foreach ($contentArray as $key=>$value) { // ensure only one line per article
+		foreach ($contentArray as $key=>$value) {
+			// filter out invalid lines
+			if (preg_match_all('/\|/', $value, $matches) != 3) {
+				unset($contentArray[$key]);
+				continue;
+			}
+
+			// ensure only one line per article
 			$line = explode('|', $value);
 
 			if (strcmp($line[0], $editedTitle->getText()) == 0) {
 				unset($contentArray[$key]);
 			}
 
-			$addedBit .= "\n".$contentArray[$key];
+			$newContent .= "\n".trim($contentArray[$key]);
 		}
 
 		$coords = explode('|', $templateMatches[0]);
-		$addedBit .= "\n".$editedTitle->getText().'|'.intval($coords[1]).'|'.intval($coords[2]).'|'.intval($coords[3]);
+		$newContent .= "\n".trim($editedTitle->getText().'|'.intval($coords[1]).'|'.intval($coords[2]).'|'.intval($coords[3]));
 
-		$gzCoordListPageArticle->doEdit($commentLine.$addedBit, '[mlGZCoordinates automated addition of Great Zero coordinate]', EDIT_UPDATE);
+		$gzCoordListPageArticle->doEdit($before.trim($newContent).$after, '[mlGZCoordinates automated addition of Great Zero coordinate]', EDIT_UPDATE);
 	}
 
 	return true;
@@ -363,13 +398,15 @@ EOT
 
 		$contentArray = preg_split('/[\n\r]+/', $gzCoordListPageContent);
 
-		unset($contentArray[0]);
-		unset($contentArray[1]);
-		unset($contentArray[0]);
-
 		$coords = array();
 
 		foreach ($contentArray as $key=>$value) {
+			// filter out invalid lines
+			if (preg_match_all('/\|/', $value, $matches) != 3) {
+				unset($contentArray[$key]);
+				continue;
+			}
+
 			$line = explode('|', $value);
 
 			$coords[] = new GreatZeroCoordinate(strval($line[0]), intval($line[1]), intval($line[2]), intval($line[3]));
