@@ -397,7 +397,7 @@ EOT
 		$wgOut->addWikiText("==Map data==");
 
 		$wgOut->addHtml($gzMap->buildImageURL());
-//		$wgOut->addHtml($gzMap->buildPointsArrayURL());
+		$wgOut->addHtml($gzMap->buildPointsArrayURL());
 		$wgOut->addHtml("\n".'<script type="text/javascript" src="'.$wgScriptPath.'/extensions/mlGZCoordinatesMap.js"></script>'."\n");
 	}
 }
