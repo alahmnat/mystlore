@@ -19,6 +19,7 @@
 */
 
 $wgExtensionFunctions[] = "mlGZCoordinatesSpecialPageLoader";
+//$wgHooks['LangugeGetSpecialPageAliases'][] = "mlGZLocalizedSpecialPageName";
 $wgHooks['ArticleSaveComplete'][] = "mlGZAddCoordinate";
 
 require_once( "$IP/includes/SpecialPage.php" );
@@ -26,7 +27,24 @@ require_once( "$IP/includes/SpecialPage.php" );
 function mlGZCoordinatesSpecialPageLoader() {
 	global $IP, $wgMessageCache;
 
-	SpecialPage::addPage( new GZCoordinatesSpecialPage() );
+	SpecialPage::addPage(new GZCoordinatesSpecialPage());
+}
+
+function mlGZLocalizedSpecialPageName(&$specialPageArray) {
+	static $messagesLoaded = false;
+	global $wgMessageCache;
+	if ($messagesLoaded) return;
+	$messagesLoaded = true;
+
+	require(dirname(__FILE__) . '/mlGZCoordinatesSpecialPage.i18n.php' );
+
+	foreach ($mlGZCoordinatesMessages as $lang => $langMessages) {
+		$wgMessageCache->addMessages($langMessages, $lang);
+	}
+
+	$specialPageArray['GZCoordinatesSpecialPage'][] = wfMsg('gzcoordinatesspecialpage');
+
+	return true;
 }
 
 function mlGZAddCoordinate(&$editedArticle) {
@@ -96,9 +114,9 @@ function mlGZAddCoordinate(&$editedArticle) {
 
 class GZCoordinatesSpecialPage extends SpecialPage {
 	function GZCoordinatesSpecialPage() {
-		SpecialPage::SpecialPage('GZCoordinatesSpecialPage');
-
 		self::loadMessages();
+
+		SpecialPage::SpecialPage('GZCoordinatesSpecialPage');
 	}
 
 	function execute( $par ) {
@@ -191,7 +209,7 @@ class GZCoordinatesSpecialPage extends SpecialPage {
 	// should use wfMsg and wfMsgHtml to localize this stuff
 	private function makeForm() {
 		global $wgScript, $wgOut;
-		$title = self::getTitleFor( 'GZCoordinatesSpecialPage' );
+		$title = self::getTitleFor('GZCoordinatesSpecialPage');
 		$form  = '<fieldset><legend>' . wfMsg('mlGZSearchForNearbyLocations') . '</legend>';
 		$form .= Xml::openElement( 'form', array( 'method' => 'get', 'action' => $wgScript ) );
 		$form .= Xml::hidden( 'title', $title->getPrefixedText() );
@@ -378,7 +396,9 @@ EOT
 
 		$wgOut->addWikiText("==Map data==");
 
-		$wgOut->addHtml($gzMap->buildQuery());
+		$wgOut->addHtml($gzMap->buildImageURL());
+//		$wgOut->addHtml($gzMap->buildPointsArrayURL());
+		$wgOut->addHtml("\n".'<script type="text/javascript" src="'.$wgScriptPath.'/extensions/mlGZCoordinatesMap.js"></script>'."\n");
 	}
 }
 
@@ -473,8 +493,8 @@ class GreatZeroMap {
 		$this->height = (abs($highest)+abs($lowest));
 	}
 
-	function buildQuery() {
-		$pointsString = '?size='.round($this->width).'|'.round($this->height);
+	function buildImageURL() {
+		$pointsString = '?mode=mapImage&amp;size='.round($this->width).'|'.round($this->height);
 		$i=1;
 
 		foreach($this->coordinates as $key=>$value) {
@@ -482,7 +502,19 @@ class GreatZeroMap {
 			$i++;
 		}
 
-		return '<img src="/extensions/mlGZCoordinatesMap.php'.$pointsString.'" style="width: 80%;" />';
+		return '<img src="/extensions/mlGZCoordinatesMap.php'.$pointsString.'" style="width: 80%;" id="mlGZMap" onmouseover="mlGZShowMapPointLabel(event, '.round($this->width).', '.round($this->height).');" />';
+	}
+
+	function buildPointsArrayURL() {
+		$pointsString = '?mode=pointsArray&amp;size='.round($this->width).'|'.round($this->height);
+		$i=1;
+
+		foreach($this->coordinates as $key=>$value) {
+			$pointsString .= '&amp;p'.$i.'='.round($value->x + $this->shiftX).'|'.round($value->y + $this->shiftY).'|'.urlencode($value->location);
+			$i++;
+		}
+
+		return '<script type="text/javascript" src="/extensions/mlGZCoordinatesMap.php'.$pointsString.'" style="width: 80%;" id="mlGZMap" onmouseover="mlGZShowMapPointLabel(event, '.round($this->width).', '.round($this->height).');"></script>';
 	}
 }
 ?>
