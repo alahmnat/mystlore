@@ -1,12 +1,16 @@
 <?php
 // TODO: security: verify somehow that the referer is a MediaWiki installation
 
-header ("Content-type: image/png");
-
 $query = explode('&', $_SERVER['QUERY_STRING']);
 
 foreach($query as $value) {
 	$queryValue = explode('=', $value);
+
+	if (strcmp($queryValue[0], 'mode') == 0) {
+		$mode = $queryValue[1];
+
+		array_shift($query);
+	}
 
 	if (strcmp($queryValue[0], 'size') == 0) {
 		$sizeValue = explode('|', $queryValue[1]);
@@ -17,31 +21,52 @@ foreach($query as $value) {
 	}
 }
 
-$width = $width+20;
-$height = $height+20;
+switch ($mode) {
+	case 'mapImage':
+		mapImage($query, $width, $height);
+		break;
 
-$im = @imagecreatetruecolor($width, $height)
-      or die("Cannot Initialize new GD image stream");
-
-$bgColor = imagecolorallocate($im, 249, 249, 249);
-imagefilledrectangle($im, 0, 0, $width-1, $height-1, $bgColor);
-
-$text_color = imagecolorallocate($im, 0, 43, 184);
-
-foreach($query as $value) {
-	$queryValue = explode('=', $value);
-
-	$pointValue = explode('|', $queryValue[1]);
-
-	$x = $pointValue[0]+10;
-	$y = $pointValue[1]+10;
-	$location = urldecode($pointValue[2]);
-
-	imageellipse($im, $x, $y, 5, 5, $text_color);
-	imagestring($im, 3, $x, $y, $location, $text_color);
+	case 'pointsArray':
+		pointsArray($query, $width, $height);
+		break;
 }
 
-imagepng($im);
-imagedestroy($im);
+function mapImage ($query, $width, $height) {
+	header ("Content-type: image/png");
+
+	$width = $width+20;
+	$height = $height+20;
+
+	$im = @imagecreatetruecolor($width, $height)
+	      or die("Cannot Initialize new GD image stream");
+
+	$bgColor = imagecolorallocate($im, 249, 249, 249);
+	imagefilledrectangle($im, 0, 0, $width-1, $height-1, $bgColor);
+
+	$text_color = imagecolorallocate($im, 0, 43, 184);
+
+	foreach($query as $value) {
+		$queryValue = explode('=', $value);
+
+		$pointValue = explode('|', $queryValue[1]);
+
+		$x = $pointValue[0]+10;
+		$y = $pointValue[1]+10;
+		$location = urldecode($pointValue[2]);
+
+		imageellipse($im, $x, $y, 5, 5, $text_color);
+		imagestring($im, 3, $x, $y, $location, $text_color);
+	}
+
+	imagepng($im);
+	imagedestroy($im);
+}
+
+function pointsArray ($query, $width, $height) {
+	echo <<<EOT
+document.body.style.display = 'none';
+EOT
+;
+}
 ?>
 
