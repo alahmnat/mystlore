@@ -35,7 +35,7 @@ function mlGZCoordinatesSpecialPageLoader() {
 function renderGZCoordinateList($input, $argv, &$parser) {
 	$parser->setOutputType(OT_WIKI);
 
-	$output .= '<p><small>(<i>Editors:</i> Please, do not edit this page. Rather, if you wish to add or correct a location, place a gz-coords template (or correct the existing one) inside the appropriate article for the location whose coordinates you wish to add. E.g., to store the coordinates of the Tokotah Courtyard, edit <a href="/wiki/Tokotah_Courtyard" title="Tokotah Courtyard">Tokotah Courtyard</a>. An article must have no more than one such template; each article corresponds to at most one coordinate.)</small>
+	$output .= '<p><small>(<i>Editors:</i> Please, do not edit this page. Rather, if you wish to add or correct a location, place a gz-coords template (or correct the existing one) inside the appropriate article for the location whose coordinates you wish to add. E.g., to store the coordinates of the Tokotah Courtyard, edit <a href="/wiki/Tokotah_Courtyard" title="Tokotah Courtyard">Tokotah Courtyard</a>. Whilst an article may have more than one such template, this list always corresponds to the very first one.)</small>
 	</p><p>Below is a list of <b><a href="/wiki/Great_Zero" title="Great Zero">Great Zero</a></b> coordinates that have been collected. You can use the <a href="/wiki/Special:GZCoordinatesSpecialPage" title="Special:GZCoordinatesSpecialPage">Great Zero Coordinates special page</a> to compare coordinates with each other, and to have their relative distances "as the crow flies" calculated.</p>
 
 <ul>
@@ -53,7 +53,7 @@ function renderGZCoordinateList($input, $argv, &$parser) {
 		// ensure only one line per article
 		$line = explode('|', $value);
 
-		$output .= '	<li><strong><a href="/wiki/'.urlencode($line[0]).'">'.$line[0]."</a>:</strong> ".$line[1].", ".$line[2].", ".$line[3]."</li>\n";
+		$output .= '	<li><strong><a href="/wiki/'.$line[0].'">'.$line[0]."</a>:</strong> ".$line[1].", ".$line[2].", ".$line[3]."</li>\n";
 	}
 
 	$output .= "</ul>";
@@ -128,7 +128,7 @@ function mlGZAddCoordinate(&$editedArticle) {
 		}
 
 		$coords = explode('|', $templateMatches[0]);
-		$newContent .= "\n".trim($editedTitle->getText().'|'.intval($coords[1]).'|'.intval($coords[2]).'|'.intval($coords[3]));
+		$newContent .= trim($editedTitle->getText().'|'.intval($coords[1]).'|'.intval($coords[2]).'|'.intval($coords[3]));
 
 		$article->doEdit($before.trim($newContent).$after, '[mlGZCoordinates automated addition of Great Zero coordinate]', EDIT_UPDATE);
 	}
