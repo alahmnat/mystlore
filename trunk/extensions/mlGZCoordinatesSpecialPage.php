@@ -28,6 +28,7 @@ function mlGZCoordinatesSpecialPageLoader() {
 	global $IP, $wgMessageCache, $wgParser;
 
 	$wgParser->setHook("mlGZCoordinateList", "renderGZCoordinateList");
+	$wgParser->setHook("GZrelativeDistance", "renderGZrelativeDistance");
 	SpecialPage::addPage(new GZCoordinatesSpecialPage());
 }
 
@@ -56,6 +57,22 @@ function renderGZCoordinateList($input, $argv, &$parser) {
 	}
 
 	$output .= "</ul>";
+
+	return $output;
+}
+
+function renderGZrelativeDistance($input, $argv, &$parser) {
+	$output = '<script type="text/javascript" src="'.$wgScriptPath.'/extensions/mlGZCoordinatesSpecialPage.js"></script>';
+
+	$title =& $parser->mTitle;
+
+	$coord1 =& GreatZeroCoordinate::newFromTitle($input);
+	$coord2 =& GreatZeroCoordinate::newFromTitle($title->getPrefixedText());
+
+	$output .= '<span class="distanceFromValue">'.$coord1->distance_from($coord2).'</span>';
+
+	// FIXME: there's got to be a more efficient way to round *once*
+	$output .= '<script type="text/javascript">roundValues();</script>';
 
 	return $output;
 }
@@ -244,6 +261,7 @@ class GZCoordinatesSpecialPage extends SpecialPage {
 	// should use wfMsg and wfMsgHtml to localize this stuff
 	private function makeForm() {
 		global $wgScript, $wgOut;
+
 		$title = self::getTitleFor('GZCoordinatesSpecialPage');
 		$form  = '<fieldset><legend>' . wfMsg('mlGZSearchForNearbyLocations') . '</legend>';
 		$form .= Xml::openElement( 'form', array( 'method' => 'get', 'action' => $wgScript ) );
@@ -448,9 +466,58 @@ class GreatZeroCoordinate {
 	public $y;
 	public $z;
 	
-	function __construct($a_location, $a_angle, $a_distance, $a_elevation) {
-		global $wgRequest, $wgOut;
+	public static function newFromTitle($title) {
+		$gzCoordListPageTitle = Title::newFromText(wfMsg('mlGZCoordinateListPage'));
+		$gzCoordListPageTitle->invalidateCache();
 
+		$gzCoordListPageArticle = new Article($gzCoordListPageTitle);
+		$gzCoordListPageContent =& $gzCoordListPageArticle->getContent();
+
+		# FIXME: this is from Title.php#newFromRedirect. There should be a better way of 'following a redirect only if needed'.
+		$mwRedir = MagicWord::get('redirect');
+		$rt = NULL;
+		if ($mwRedir->matchStart($gzCoordListPageContent)) {
+			$m = array();
+			if (preg_match('/\[{2}(.*?)(?:\||\]{2})/', $gzCoordListPageContent, $m)) {
+				if (substr($m[1],0,1) == ':') {
+					$m[1] = substr( $m[1], 1 );
+				}
+
+				$rt = Title::newFromText($m[1]);
+
+				if ( !is_null($rt) && $rt->isSpecial( 'Userlogout' ) ) {
+					$rt = NULL;
+				}
+			}
+		}
+		if ($rt != NULL) {
+			$gzCoordListPageTitle = $rt;
+			$gzCoordListPageTitle->invalidateCache();
+
+			$gzCoordListPageArticle = new Article($gzCoordListPageTitle);
+			$gzCoordListPageContent =& $gzCoordListPageArticle->getContent();
+		}
+
+		$contentArray = preg_split('/[\n\r]+/', $gzCoordListPageContent);
+
+		$coords = array();
+
+		foreach ($contentArray as $key=>$value) {
+			// filter out invalid lines
+			if (preg_match_all('/\|/', $value, $matches) != 3) {
+				unset($contentArray[$key]);
+				continue;
+			}
+
+			$line = explode('|', $value);
+
+			if (strcmp(strval($line[0]), $title) == 0) {
+				return new GreatZeroCoordinate(strval($line[0]), intval($line[1]), intval($line[2]), intval($line[3]));
+			}
+		}
+	}
+
+	function __construct($a_location, $a_angle, $a_distance, $a_elevation) {
 		$angle = $a_angle * 2 * pi() / 62500;
 
 		$this->location = $a_location;
@@ -490,8 +557,6 @@ class GreatZeroMap {
 	}
 
 	function determineWidth() {
-		global $wgOut;
-
 		$highest = 0;
 		$lowest = 0;
 
