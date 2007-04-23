@@ -101,38 +101,10 @@ function mlGZAddCoordinate(&$editedArticle) {
 	}
 
 	if (preg_match('/{{gz-coord.*}}/', $editedArticle->getContent(), $templateMatches)) { // only update if the article has such a template
-		$gzCoordListPageTitle = Title::newFromText(wfMsg('mlGZCoordinateListPage'));
-		$gzCoordListPageTitle->invalidateCache();
+		$article =& getArticleFollowingRedirects(wfMsg('mlGZCoordinateListPage'));
+		$content =& $article->getContent();
 
-		$gzCoordListPageArticle = new Article($gzCoordListPageTitle);
-		$gzCoordListPageContent =& $gzCoordListPageArticle->getContent();
-
-		# FIXME: this is from Title.php#newFromRedirect. There should be a better way of 'following a redirect only if needed'.
-		$mwRedir = MagicWord::get('redirect');
-		$rt = NULL;
-		if ($mwRedir->matchStart($gzCoordListPageContent)) {
-			$m = array();
-			if (preg_match('/\[{2}(.*?)(?:\||\]{2})/', $gzCoordListPageContent, $m)) {
-				if (substr($m[1],0,1) == ':') {
-					$m[1] = substr( $m[1], 1 );
-				}
-
-				$rt = Title::newFromText($m[1]);
-
-				if ( !is_null($rt) && $rt->isSpecial( 'Userlogout' ) ) {
-					$rt = NULL;
-				}
-			}
-		}
-		if ($rt != NULL) {
-			$gzCoordListPageTitle = $rt;
-			$gzCoordListPageTitle->invalidateCache();
-
-			$gzCoordListPageArticle = new Article($gzCoordListPageTitle);
-			$gzCoordListPageContent =& $gzCoordListPageArticle->getContent();
-		}
-
-		$contentArray = preg_split('/[\n\r]+/', $gzCoordListPageContent);
+		$contentArray = preg_split('/[\n\r]+/', $content);
 
 		$before = "<mlGZCoordinateList>\n";
 		$newContent = '';
@@ -158,10 +130,44 @@ function mlGZAddCoordinate(&$editedArticle) {
 		$coords = explode('|', $templateMatches[0]);
 		$newContent .= "\n".trim($editedTitle->getText().'|'.intval($coords[1]).'|'.intval($coords[2]).'|'.intval($coords[3]));
 
-		$gzCoordListPageArticle->doEdit($before.trim($newContent).$after, '[mlGZCoordinates automated addition of Great Zero coordinate]', EDIT_UPDATE);
+		$article->doEdit($before.trim($newContent).$after, '[mlGZCoordinates automated addition of Great Zero coordinate]', EDIT_UPDATE);
 	}
 
 	return true;
+}
+
+function getArticleFollowingRedirects($inTitle) {
+	$title = Title::newFromText($inTitle);
+	$title->invalidateCache();
+
+	$article = new Article($title);
+	$content =& $article->getContent();
+
+	# FIXME: this is from Title.php#newFromRedirect. There should be a better way of 'following a redirect only if needed'.
+	$mwRedir = MagicWord::get('redirect');
+	$rt = NULL;
+	if ($mwRedir->matchStart($content)) {
+		$m = array();
+		if (preg_match('/\[{2}(.*?)(?:\||\]{2})/', $content, $m)) {
+			if (substr($m[1],0,1) == ':') {
+				$m[1] = substr( $m[1], 1 );
+			}
+
+			$rt = Title::newFromText($m[1]);
+
+			if ( !is_null($rt) && $rt->isSpecial( 'Userlogout' ) ) {
+				$rt = NULL;
+			}
+		}
+	}
+	if ($rt != NULL) {
+		$title = $rt;
+		$title->invalidateCache();
+
+		$article = new Article($title);
+	}
+
+	return $article;
 }
 
 class GZCoordinatesSpecialPage extends SpecialPage {
@@ -383,38 +389,10 @@ EOT
 	}
 
 	private function retrieveListOfLocations() {
-		$gzCoordListPageTitle = Title::newFromText(wfMsg('mlGZCoordinateListPage'));
-		$gzCoordListPageTitle->invalidateCache();
+		$article =& getArticleFollowingRedirects(wfMsg('mlGZCoordinateListPage'));
+		$content =& $article->getContent();
 
-		$gzCoordListPageArticle = new Article($gzCoordListPageTitle);
-		$gzCoordListPageContent =& $gzCoordListPageArticle->getContent();
-
-		# FIXME: this is from Title.php#newFromRedirect. There should be a better way of 'following a redirect only if needed'.
-		$mwRedir = MagicWord::get('redirect');
-		$rt = NULL;
-		if ($mwRedir->matchStart($gzCoordListPageContent)) {
-			$m = array();
-			if (preg_match('/\[{2}(.*?)(?:\||\]{2})/', $gzCoordListPageContent, $m)) {
-				if (substr($m[1],0,1) == ':') {
-					$m[1] = substr( $m[1], 1 );
-				}
-
-				$rt = Title::newFromText($m[1]);
-
-				if ( !is_null($rt) && $rt->isSpecial( 'Userlogout' ) ) {
-					$rt = NULL;
-				}
-			}
-		}
-		if ($rt != NULL) {
-			$gzCoordListPageTitle = $rt;
-			$gzCoordListPageTitle->invalidateCache();
-
-			$gzCoordListPageArticle = new Article($gzCoordListPageTitle);
-			$gzCoordListPageContent =& $gzCoordListPageArticle->getContent();
-		}
-
-		$contentArray = preg_split('/[\n\r]+/', $gzCoordListPageContent);
+		$contentArray = preg_split('/[\n\r]+/', $content);
 
 		$coords = array();
 
@@ -467,38 +445,10 @@ class GreatZeroCoordinate {
 	public $z;
 	
 	public static function newFromTitle($title) {
-		$gzCoordListPageTitle = Title::newFromText(wfMsg('mlGZCoordinateListPage'));
-		$gzCoordListPageTitle->invalidateCache();
+		$article =& getArticleFollowingRedirects(wfMsg('mlGZCoordinateListPage'));
+		$content =& $article->getContent();
 
-		$gzCoordListPageArticle = new Article($gzCoordListPageTitle);
-		$gzCoordListPageContent =& $gzCoordListPageArticle->getContent();
-
-		# FIXME: this is from Title.php#newFromRedirect. There should be a better way of 'following a redirect only if needed'.
-		$mwRedir = MagicWord::get('redirect');
-		$rt = NULL;
-		if ($mwRedir->matchStart($gzCoordListPageContent)) {
-			$m = array();
-			if (preg_match('/\[{2}(.*?)(?:\||\]{2})/', $gzCoordListPageContent, $m)) {
-				if (substr($m[1],0,1) == ':') {
-					$m[1] = substr( $m[1], 1 );
-				}
-
-				$rt = Title::newFromText($m[1]);
-
-				if ( !is_null($rt) && $rt->isSpecial( 'Userlogout' ) ) {
-					$rt = NULL;
-				}
-			}
-		}
-		if ($rt != NULL) {
-			$gzCoordListPageTitle = $rt;
-			$gzCoordListPageTitle->invalidateCache();
-
-			$gzCoordListPageArticle = new Article($gzCoordListPageTitle);
-			$gzCoordListPageContent =& $gzCoordListPageArticle->getContent();
-		}
-
-		$contentArray = preg_split('/[\n\r]+/', $gzCoordListPageContent);
+		$contentArray = preg_split('/[\n\r]+/', $content);
 
 		$coords = array();
 
