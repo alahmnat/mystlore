@@ -69,6 +69,10 @@ function renderGZrelativeDistance($input, $argv, &$parser) {
 	$coord1 =& GreatZeroCoordinate::newFromTitle($input);
 	$coord2 =& GreatZeroCoordinate::newFromTitle($title->getPrefixedText());
 
+	if (! is_object($coord1)) {
+		return '';
+	}
+
 	$output .= '<span class="distanceFromValue">'.$coord1->distance_from($coord2).'</span>';
 
 	// FIXME: there's got to be a more efficient way to round *once*
@@ -128,9 +132,9 @@ function mlGZAddCoordinate(&$editedArticle) {
 		}
 
 		$coords = explode('|', $templateMatches[0]);
-		$newContent .= trim($editedTitle->getText().'|'.intval($coords[1]).'|'.intval($coords[2]).'|'.intval($coords[3]));
+		$newContent .= "\n".trim($editedTitle->getText().'|'.intval($coords[1]).'|'.intval($coords[2]).'|'.intval($coords[3]));
 
-		$article->doEdit($before.trim($newContent).$after, '[mlGZCoordinates automated addition of Great Zero coordinate]', EDIT_UPDATE);
+		$article->doEdit($before.trim($newContent).$after, '[mlGZCoordinates automated addition of Great Zero coordinate]', EDIT_UPDATE|EDIT_FORCE_BOT);
 	}
 
 	return true;
