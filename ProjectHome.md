@@ -1,0 +1,1 @@
+MYSTlore is a MediaWiki-based wiki website at <http://www.mystlore.com/>. A number of extensions have been written to accommodate MYSTlore's feature needs. To ease development through version control, contribute back to the community, and allow others to join in, these extensions will be published on Google Project Hosting.
