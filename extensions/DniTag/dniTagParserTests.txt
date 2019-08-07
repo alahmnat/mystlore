@@ -1,0 +1,13 @@
+# Force the test runner to ensure the extension is loaded
+!! hooks
+d'ni
+!! endhooks
+
+#Regression tests for existing functionality, to ensure nothing was broken.
+!! test
+<d'ni>
+!! input
+<d'ni>this is a test</d'ni>
+!! result
+<span class="dni">this is a test</span>
+!! end

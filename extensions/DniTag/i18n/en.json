@@ -1,0 +1,9 @@
+{
+	"@metadata": {
+		"authors": [
+			"Soeren Kuklau",
+			"Gary Buddell"
+		]
+	},
+	"dnitag-desc": "Adds the <nowiki><d'ni></nowiki> tag, which displays the specified text using the D'ni web font."
+}

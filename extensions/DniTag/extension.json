@@ -1,0 +1,30 @@
+{
+	"name": "DniTag",
+	"author": [
+		"Soeren Kuklau",
+		"Gary Buddell"
+	],
+	"url": "",
+	"license-name": "MIT",
+	"type": "parserhook",
+	"version": "2.0",
+	"url": "",
+	"descriptionmsg": "dnitag-desc",
+	"type": "parserhook",
+	"MessagesDirs": {
+		"DniTag": [
+			"i18n"
+		]
+	},
+	"Hooks": {
+		"ParserFirstCallInit": [
+			"DniTag::onParserSetup"
+		]
+	},
+	"AutoloadClasses": {
+		"DniTag": "DniTag.class.php"
+	},
+	"ParserTestFiles": [
+		"dniTagParserTests.txt"
+	]
+}
